@@ -1,0 +1,3 @@
+spring:
+  cloud:
+     propertiesFile: spring-cloud.properties

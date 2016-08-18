@@ -1,0 +1,72 @@
+buildscript {
+    repositories {
+        mavenCentral()
+    }
+    dependencies {
+        classpath("org.springframework.boot:spring-boot-gradle-plugin:1.3.2.RELEASE")
+        classpath("io.spring.gradle:dependency-management-plugin:0.5.2.RELEASE")
+    }
+}
+
+apply plugin: 'java'
+apply plugin: 'eclipse'
+apply plugin: 'idea'
+apply plugin: 'spring-boot'
+apply plugin: 'io.spring.dependency-management'
+
+jar {
+    baseName = 'micro-soialreview'
+    version =  '0.1.0'
+}
+
+repositories {
+    mavenCentral()
+}
+
+sourceCompatibility = 1.8
+targetCompatibility = 1.8
+
+dependencyManagement {
+     imports {
+          mavenBom 'org.springframework.cloud:spring-cloud-netflix:1.0.4.RELEASE'
+     }
+}
+
+dependencies {
+    // tag::jetty[]
+    compile("org.springframework.boot:spring-boot-starter-web") {
+        exclude module: "spring-boot-starter-tomcat"
+    }
+    compile("org.springframework.boot:spring-boot-starter-jetty")
+    compile("org.springframework:spring-web")
+    // https://mvnrepository.com/artifact/org.springframework.cloud/spring-cloud-spring-service-connector
+    compile group: 'org.springframework.cloud', name: 'spring-cloud-spring-service-connector', version: '1.2.3.RELEASE'
+
+    // end::jetty[]
+    // tag::actuator[]
+    //compile("org.springframework.boot:spring-boot-starter-actuator")
+    // end::actuator[]
+    //testCompile("junit:junit")
+    //testCompile("org.springframework.boot:spring-boot-starter-test")
+
+    compile 'org.springframework.cloud:spring-cloud-starter-eureka'
+
+    compile group: 'com.cloudant', name: 'cloudant-client', version: '2.5.1'
+    //compile group: 'com.squareup.okhttp', name: 'okhttp-urlconnection', version: '2.7.5'
+
+    // https://mvnrepository.com/artifact/net.bluemix/bluemix-cloud-connectors-cloudfoundry
+    //compile group: 'net.bluemix', name: 'bluemix-cloud-connectors-cloudfoundry', version: '0.0.1.RC6'
+
+    // https://mvnrepository.com/artifact/net.bluemix/bluemix-cloud-connectors-local
+    //compile group: 'net.bluemix', name: 'bluemix-cloud-connectors-local', version: '0.0.1.RC4'
+
+    // https://mvnrepository.com/artifact/org.ektorp/org.ektorp
+    //compile group: 'org.ektorp', name: 'org.ektorp', version: '1.4.0'
+
+
+
+}
+
+task wrapper(type: Wrapper) {
+    gradleVersion = '2.3'
+}
