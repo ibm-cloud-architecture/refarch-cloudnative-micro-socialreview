@@ -79,4 +79,5 @@ This project is built to demonstrate how to build a Spring Boot Microservices ap
     You can validate the docker application at:
 
     [http://{dockerhost}:8080/micro/review](http://{dockerhost}:8080/micro/review)
+
     Replace the {dockerhost} with your docker hostname or IP address.
