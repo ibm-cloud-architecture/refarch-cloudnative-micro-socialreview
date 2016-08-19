@@ -20,6 +20,7 @@ import com.cloudant.client.api.CloudantClient;
 import com.cloudant.client.api.Database;
 import com.cloudant.client.api.model.IndexField;
 import com.cloudant.client.api.model.IndexField.SortOrder;
+import com.cloudant.client.api.model.Response;
 
 import java.util.HashMap;
 import java.util.List;
@@ -32,12 +33,31 @@ public class ReviewRestController {
   @Autowired
   private Database db;
 
-  @RequestMapping(method=RequestMethod.GET)
-  public @ResponseBody List<Review> getAll(@RequestParam(value="itemId", required=false) String itemId) {
 
+
+  // Create a new review
+  @RequestMapping(method = RequestMethod.POST, consumes = "application/json")
+  public @ResponseBody String saveReview(@RequestBody Review review) {
+
+    // Mock data for testing
     //db.save(new Review(true));
     //Review doc = db.find(Review.class,"111");
     //return doc.toString();
+
+    System.out.println("Save Review " + review);
+
+    Response r = null;
+    if (review != null) {
+        r = db.post(review);
+    }
+
+    return r.getId();
+  }
+
+
+  // Query reviews for all documents or by ItemId
+  @RequestMapping(method=RequestMethod.GET)
+  public @ResponseBody List<Review> getAll(@RequestParam(value="itemId", required=false) String itemId) {
 
     // Get all documents from socialreviewdb
     List<Review> allDocs = null;

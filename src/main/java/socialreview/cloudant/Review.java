@@ -15,6 +15,8 @@ public class Review {
   private String reviewer_name;
   private String review_date;
 
+  public Review(){}
+
   public Review(boolean isStub)
   {
     this.comment = "It works";
