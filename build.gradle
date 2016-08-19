@@ -67,6 +67,18 @@ dependencies {
 
 }
 
+task docker {
+    doLast {
+        copy {
+            from 'build/libs/micro-soialreview-0.1.0.jar'
+            into 'docker'
+        }
+        file("docker/micro-soialreview-0.1.0.jar").renameTo(file("docker/app.jar"))
+
+    }
+}
+
+
 task wrapper(type: Wrapper) {
     gradleVersion = '2.3'
 }
