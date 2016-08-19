@@ -14,6 +14,7 @@ import org.springframework.boot.context.embedded.MimeMappings;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
+import javax.annotation.Resource;
 
 import com.cloudant.client.api.CloudantClient;
 import com.cloudant.client.api.ClientBuilder;
@@ -34,20 +35,26 @@ import java.net.URL;
 public class Application {
 
     public static void main(String[] args) {
-        SpringApplication.run(Application.class, args);
+        SpringApplication.run(EnvironmentConfig.class, args);
         System.out.println("SocialReview Spring Boot Microservice is ready on IBM Bluemix");
     }
 
+    @Resource
+	  private CloudantConfig dbconfig;
 
     @Bean
     public Database cloudantclient () {
 
       Database db = null;
       try {
-        CloudantClient client = ClientBuilder.url(new URL("https://3ab9bd22-9583-473a-8746-44f0d2add79e-bluemix.cloudant.com"))
-              .username("3ab9bd22-9583-473a-8746-44f0d2add79e-bluemix")
-              .password("158a98558b706767124fdd7ee38421366bd63f0ff28e9a1ebfacfc33d6c7f0b3")
-              .build();
+        //CloudantClient client = ClientBuilder.url(new URL("https://3ab9bd22-9583-473a-8746-44f0d2add79e-bluemix.cloudant.com"))
+        //      .username("3ab9bd22-9583-473a-8746-44f0d2add79e-bluemix")
+        //      .password("158a98558b706767124fdd7ee38421366bd63f0ff28e9a1ebfacfc33d6c7f0b3")
+        //      .build();
+          CloudantClient client = ClientBuilder.url(new URL(dbconfig.getHost()))
+                    .username(dbconfig.getUsername())
+                    .password(dbconfig.getPassword())
+                    .build();
          // Show the server version
          System.out.println("Server Version: " + client.serverVersion());
          // Get a List of all the databases this Cloudant account
