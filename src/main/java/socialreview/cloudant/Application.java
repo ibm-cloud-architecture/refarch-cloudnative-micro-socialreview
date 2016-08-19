@@ -60,7 +60,7 @@ public class Application {
           //Get socialReview db
           // Get a Database instance to interact with, but don't create it if it doesn't already exist
           db = client.database("socialreviewdb", false);
-          System.out.println(db.info());
+          System.out.println(db.info().toString());
 
       }catch (Exception e)
       {
