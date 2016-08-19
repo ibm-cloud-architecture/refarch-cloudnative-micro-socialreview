@@ -66,15 +66,15 @@ This project is built to demonstrate how to build a Spring Boot Microservices ap
 
      This will copy the Spring boot jar file to the docker folder, and rename it to app.jar
 
- - Build the docker image:
+- Build the docker image:
 
-      `$ cd docker`
+    `$ cd docker`
 
-      `$ docker build -t cloudnative/socialreviewservice .`
+    `$ docker build -t cloudnative/socialreviewservice .`
 
- - Run the local docker image
+- Run the local docker image
 
-      `$ docker run -d -p 8080:8080 --name socialreview cloudnative/socialreviewservice`
+    `$ docker run -d -p 8080:8080 --name socialreview cloudnative/socialreviewservice`
 
     You can validate the docker application at:
 
