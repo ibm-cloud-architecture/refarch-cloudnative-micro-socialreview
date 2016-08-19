@@ -1,6 +1,7 @@
 # Spring Boot Netflix OSS app Integration with IBM Cloudant
 
-**This project is part of the 'IBM Cloud Native Reference Architecture' suite, available at https://github.com/ibm-solution-engineering/refarch-cloudnative**
+**This project is part of the 'IBM Cloud Native Reference Architecture' suite, available at
+ https://github.com/ibm-solution-engineering/refarch-cloudnative**
 
 ## Introduction
 
@@ -30,6 +31,7 @@ This project is built to demonstrate how to build a Spring Boot Microservices ap
  	`$ ./gradlew build`
 
  - To run the app:
+
  	`$ java -jar build/libs/micro-soialreview-0.1.0.jar`
 
  - Validate the application
@@ -38,15 +40,17 @@ This project is built to demonstrate how to build a Spring Boot Microservices ap
 
      This will return all the reviews in the database.
      You can use Chrome POSTMAN to insert a new review document. Use the following sample content:
-     `{
+
+     ```json
+     {
         "comment": "Nice Product",
         "itemId": 13402,
         "rating": 5,
         "reviewer_email": "gangchen@us.ibm.com",
         "reviewer_name": "Gang Chen",
         "review_date": "06/08/2016"
-    }`
-
+    }
+    ```
 
 
 ## Deploy to local Docker environment
