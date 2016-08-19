@@ -20,11 +20,13 @@ This project is built to demonstrate how to build a Spring Boot Microservices ap
 
  You can either use Cloudant local or IBM Cloudant managed account. Once you have cloudant setup, update the src/resources/application.yml file for the Cloudant credential:
 
-  `# Cloudant Confiugration
+   ```yml
+   # Cloudant Confiugration
    cloudant:
     username: {your_cloudant_username}
     password: {your_cloudant_password}
-    host: {your_cloudant_host}`
+    host: {your_cloudant_host}
+    ```
 
  - Run following command to build the application:
 
