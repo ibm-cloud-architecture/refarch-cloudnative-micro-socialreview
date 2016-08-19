@@ -1,8 +1,7 @@
 # Spring Boot Netflix OSS app Integration with IBM Cloudant
 
-**This project is part of the 'IBM Cloud Native Reference Architecture' suite, available at
-
-https://github.com/ibm-solution-engineering/refarch-cloudnative**
+*This project is part of the 'IBM Cloud Native Reference Architecture' suite, available at
+https://github.com/ibm-solution-engineering/refarch-cloudnative*
 
 ## Introduction
 
