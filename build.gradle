@@ -1,7 +1,6 @@
 buildscript {
     repositories {
-        //mavenCentral()
-        jcenter()
+        mavenCentral()
     }
     dependencies {
         classpath("org.springframework.boot:spring-boot-gradle-plugin:1.4.0.RELEASE")
@@ -21,8 +20,7 @@ jar {
 }
 
 repositories {
-    //mavenCentral()
-    jcenter()
+    mavenCentral()
 }
 
 //sourceSets {
@@ -48,7 +46,7 @@ targetCompatibility = 1.8
 
 dependencyManagement {
      imports {
-        mavenBom 'org.springframework.cloud:spring-cloud-netflix:1.1.5.RELEASE'
+        mavenBom 'org.springframework.cloud:spring-cloud-dependencies:Brixton.SR4'
      }
 }
 
@@ -68,7 +66,7 @@ dependencies {
     //testCompile("junit:junit:4.12.RELEASE")
     //testCompile("org.springframework.boot:spring-boot-starter-test")
 
-    compile 'org.springframework.cloud:spring-cloud-starter-eureka'
+    compile('org.springframework.cloud:spring-cloud-starter-eureka')
 
     compile group: 'com.cloudant', name: 'cloudant-client', version: '2.5.1'
 
@@ -79,16 +77,12 @@ dependencies {
     // https://mvnrepository.com/artifact/ch.qos.logback/logback-core
     //compile group: 'ch.qos.logback', name: 'logback-core', version: '1.1.7'
 
-
-
 }
 
 //    task integrationTest(type: Test) {
 //        testClassesDir = sourceSets.integrationTest.output.classesDir
 //        classpath = sourceSets.integrationTest.runtimeClasspath
 //    }
-
-
 
 
 //    We define diferent html report destination for unit and integration test
@@ -106,7 +100,6 @@ task docker {
 
     }
 }
-
 
 task wrapper(type: Wrapper) {
     gradleVersion = '2.3'

@@ -30,11 +30,15 @@ This project is built to demonstrate how to build a Spring Boot Microservices ap
 
  - Run following command to build the application:
 
- 	`$ ./gradlew build`
+ 	`$ ./gradlew build -x test`
 
  - To run the app:
 
  	`$ java -jar build/libs/micro-soialreview-0.1.0.jar`
+
+ - To run integration test case:
+
+  `$ ./gradlew test`  
 
  - Validate the application
 
