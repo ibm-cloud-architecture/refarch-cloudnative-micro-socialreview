@@ -57,7 +57,7 @@ public class ReviewRestController {
 
   // Query reviews for all documents or by ItemId
   @RequestMapping(method=RequestMethod.GET)
-  public @ResponseBody List<Review> getAll(@RequestParam(value="itemId", required=false) String itemId) {
+  public @ResponseBody List<Review> getAll(@RequestParam(required=false) Integer itemId) {
 
     // Get all documents from socialreviewdb
     List<Review> allDocs = null;
@@ -79,7 +79,8 @@ public class ReviewRestController {
               }
 		      );
           System.out.println("Successfully created index");
-          allDocs = db.findByIndex("{\"itemId\" :\"" + itemId + "\"}", Review.class);
+          //allDocs = db.findByIndex("{\"itemId\" :\"" + itemId + "\"}", Review.class);
+          allDocs = db.findByIndex("{\"itemId\" : " + itemId + "}", Review.class);
       }
 
 
