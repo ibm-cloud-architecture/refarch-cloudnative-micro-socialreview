@@ -9,8 +9,8 @@ public class Review {
   private String _rev;
   private String _id;
   private String comment;
-  private String itemId;
-  private String rating;
+  private int itemId;
+  private int rating;
   private String reviewer_email;
   private String reviewer_name;
   private String review_date;
@@ -20,8 +20,8 @@ public class Review {
   public Review(boolean isStub)
   {
     this.comment = "It works";
-    this.itemId = "1204";
-    this.rating = "4";
+    this.itemId = 13401;
+    this.rating = 5;
     this.reviewer_email = "gc@ibm.com";
     this.reviewer_name = "Gang";
     this.review_date = "08/18/2016";
@@ -40,16 +40,16 @@ public class Review {
   public void setComment(String comment) {
     this.comment = comment;
   }
-  public String getItemId() {
+  public int getItemId() {
     return itemId;
   }
-  public void setItemId(String itemId) {
+  public void setItemId(int itemId) {
     this.itemId = itemId;
   }
-  public String getRating() {
+  public int getRating() {
     return rating;
   }
-  public void setRating(String rating) {
+  public void setRating(int rating) {
     this.rating = rating;
   }
   public String getReviewer_email() {
