@@ -72,8 +72,7 @@ This project is built to demonstrate how to build a Spring Boot Microservices ap
 
 - Build the docker image:
 
-    `$ cd docker`
-
+    `$ cd docker`  
     `$ docker build -t cloudnative/socialreviewservice .`
 
 - Run the local docker image
@@ -92,10 +91,10 @@ This project is built to demonstrate how to build a Spring Boot Microservices ap
 
  - Tag and Push the microservice docker image to Bluemix registry
 
-     `$ cf login`
-     `$ cf ic login`
-     `$ docker tag cloudnative/socialreviewservice registry.ng.bluemix.net/{yournamespace}/socialreviewservice`
-     `$ docker push registry.ng.bluemix.net/chrisking/socialreviewservice`
+     `$ cf login`  
+     `$ cf ic login`  
+     `$ docker tag cloudnative/socialreviewservice   registry.ng.bluemix.net/{yournamespace}/socialreviewservice`  
+     `$ docker push registry.ng.bluemix.net/chrisking/socialreviewservice`  
 
      Replace the {yournamespace} variable with your Bluemix private registry namespace. If you don't have one, create with following command:
 
