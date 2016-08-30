@@ -94,7 +94,7 @@ This project is built to demonstrate how to build a Spring Boot Microservices ap
      `$ cf login`  
      `$ cf ic login`  
      `$ docker tag cloudnative/socialreviewservice   registry.ng.bluemix.net/{yournamespace}/socialreviewservice`  
-     `$ docker push registry.ng.bluemix.net/chrisking/socialreviewservice`  
+     `$ docker push registry.ng.bluemix.net/{yournamespace}/socialreviewservice`  
 
      Replace the {yournamespace} variable with your Bluemix private registry namespace. If you don't have one, create with following command:
 
@@ -106,7 +106,7 @@ This project is built to demonstrate how to build a Spring Boot Microservices ap
 
      Bluemix container group is a scalable Docker contianer runtime where auto-recovery and auto-scaling service are provided. Use the following command to create the container group for the microservice:
 
-     `cf ic group create -p 8080  -m 512 --min 1 --auto --name micro-socialreview-group -n socialreviewservice registry.ng.bluemix.net/{yournamespace}/socialreviewservice`
+     `cf ic group create -p 8080  -m 512 --min 1 --auto --name micro-socialreview-group -n socialreviewservice -d mybluemix.net registry.ng.bluemix.net/{yournamespace}/socialreviewservice`
 
      You can view your container instance with following command:
      `cf ic ps`

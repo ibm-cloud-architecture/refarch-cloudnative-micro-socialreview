@@ -28,7 +28,7 @@ import java.net.URL;
 
 
 @SpringBootApplication
-//@EnableDiscoveryClient
+@EnableDiscoveryClient
 @Configuration
 @ComponentScan
 @EnableAutoConfiguration
