@@ -12,7 +12,27 @@ This project is built to demonstrate how to build a Spring Boot Microservices ap
  - Integrate with Netflix Eureka framework
  - Deployment option for IBM Bluemix Cloud Foundry and Container compute runtime
 
+## Provision Cloudant Database in Bluemix:
 
+Login to your Bluemix console  
+Open browser to create Cloudant Service using this link [https://new-console.ng.bluemix.net/catalog/services/cloudant-nosql-db](https://new-console.ng.bluemix.net/catalog/services/cloudant-nosql-db)  
+Name your Cloudant service name like `refarch-cloudantdb`  
+For testing, you can select the "Shared" plan, then click "Create"  
+Once created, open the credential tab to note down your Cloudant Service credential, for example:
+
+```
+{
+ "username": "3xxxx-44f0d2add79e-bluemix",
+ "password": "xxxxxxxxxxxxxxxxxxxxxx",
+ "host": "xxxxx-bluemix.cloudant.com",
+ "port": 443,
+ "url": "https://xxxxx-bluemix.cloudant.com"
+}
+```
+Then, click the "Launch" button to open the Cloudant management console.  
+In the Cloudant console, create a new empty database named: **socialreviewdb**  
+
+You can close the console now.
 
 ## Run the application locally:
 
