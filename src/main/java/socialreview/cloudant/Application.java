@@ -47,14 +47,8 @@ public class Application {
 
       Database db = null;
       try {
-/*
-        CloudantClient client = ClientBuilder.url(new URL("https://3ab9bd22-9583-473a-8746-44f0d2add79e-bluemix.cloudant.com"))
-              .username("3ab9bd22-9583-473a-8746-44f0d2add79e-bluemix")
-              .password("158a98558b706767124fdd7ee38421366bd63f0ff28e9a1ebfacfc33d6c7f0b3")
-              .build();
-              */
 
-          CloudantClient client = ClientBuilder.url(new URL(dbconfig.getHost()))
+        CloudantClient client = ClientBuilder.url(new URL(dbconfig.getHost()))
                     .username(dbconfig.getUsername())
                     .password(dbconfig.getPassword())
                     .build();
@@ -70,7 +64,7 @@ public class Application {
 
           //Get socialReview db
           // Get a Database instance to interact with, but don't create it if it doesn't already exist
-          db = client.database("socialreviewdb", false);
+          db = client.database("socialreviewdb", true);
           System.out.println(db.info().toString());
 
       }catch (Exception e)
