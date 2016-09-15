@@ -1,11 +1,3 @@
-eureka:
-  instance:
-     preferIpAddress: true
-  client:
-    serviceUrl:
-       defaultZone: http://microservices-refapp-eureka-chrisking.mybluemix.net/eureka/
-
-
 # Spring properties
 spring:
   application:

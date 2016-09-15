@@ -66,15 +66,8 @@ public class ReviewControllerTest {
 
 	@Test
 	public void getHello() throws Exception {
-		//mvc.perform(MockMvcRequestBuilders.get("/micro/review").accept(MediaType.APPLICATION_JSON))
-		//		.andExpect(status().isOk());
-				//.andExpect(content().string(equalTo("Greetings from Spring Boot!")));
 
-				System.out.println("Execute the test gettingAll");
-
-      //true, check not null
-      //assertThat("a", is(notNullValue()));
-      //assertThat(this.webAppContext, is(notNullValue()));
+			System.out.println("Execute the test gettingAll");
 
 			ResponseEntity<String> response = template.getForEntity(base.toString(), String.class);
       assertThat( response.getStatusCode() , equalTo(HttpStatus.OK));

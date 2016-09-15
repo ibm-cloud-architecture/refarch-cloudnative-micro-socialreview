@@ -1,10 +1,5 @@
 package socialreview.cloudant;
 
-//import org.ektorp.CouchDbConnector;
-//import org.ektorp.support.CouchDbRepositorySupport;
-//import org.springframework.beans.factory.annotation.Autowired;
-//import org.springframework.stereotype.Component;
-
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,8 +27,6 @@ public class ReviewRestController {
 
   @Autowired
   private Database db;
-
-
 
   // Create a new review
   @RequestMapping(method = RequestMethod.POST, consumes = "application/json")

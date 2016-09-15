@@ -1,9 +1,5 @@
 package socialreview.cloudant;
 
-//import org.codehaus.jackson.annotate.JsonIgnoreProperties;
-//import org.codehaus.jackson.annotate.JsonProperty;
-//import org.codehaus.jackson.annotate.JsonWriteNullProperties;
-
 public class Review {
 
   private String _rev;
@@ -23,7 +19,7 @@ public class Review {
     this.itemId = 13401;
     this.rating = 5;
     this.reviewer_email = "gc@ibm.com";
-    this.reviewer_name = "Gang";
+    this.reviewer_name = "Gang Chen";
     this.review_date = "08/18/2016";
   }
 

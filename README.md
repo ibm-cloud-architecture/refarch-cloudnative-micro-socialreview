@@ -29,8 +29,7 @@ Once created, open the credential tab to note down your Cloudant Service credent
  "url": "https://xxxxx-bluemix.cloudant.com"
 }
 ```
-Then, click the "Launch" button to open the Cloudant management console.  
-In the Cloudant console, create a new empty database named: **socialreviewdb**  
+Then, click the "Launch" button to open the Cloudant management console.   
 
 You can close the console now.
 
