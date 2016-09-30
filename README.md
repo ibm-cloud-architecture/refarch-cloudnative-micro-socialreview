@@ -99,6 +99,12 @@ You can close the console now.
 
     `$ docker run -d -p 8080:8080 --name socialreview cloudnative/socialreviewservice`
 
+    You can check your docker instance with command:  
+    `docker ps`  
+
+    if you'd like to see the logs of the docker instance, use following command:  
+    `$ docker logs {container-id}`  
+    
     You can validate the docker application at:
 
     [http://{dockerhost}:8080/micro/review](http://{dockerhost}:8080/micro/review)
