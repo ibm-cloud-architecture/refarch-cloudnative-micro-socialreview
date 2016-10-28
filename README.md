@@ -104,7 +104,7 @@ You can close the console now.
 
     if you'd like to see the logs of the docker instance, use following command:  
     `$ docker logs {container-id}`  
-    
+
     You can validate the docker application at:
 
     [http://{dockerhost}:8080/micro/review](http://{dockerhost}:8080/micro/review)
@@ -144,3 +144,7 @@ You can close the console now.
    Open your browser to the URL matches your Container group route:
 
    [http://socialreviewservice.mybluemix.net/micro/review](http://socialreviewservice.mybluemix.net/micro/review)
+
+ - Unmap public route
+
+    `cf ic route unmap -n socialreviewservice -d mybluemix.net micro-socialreview-group`
