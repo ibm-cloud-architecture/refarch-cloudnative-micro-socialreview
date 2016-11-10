@@ -132,7 +132,7 @@ You can close the console now.
 
      Bluemix container group is a scalable Docker container runtime where auto-recovery and auto-scaling service are provided. Use the following command to create the container group for the microservice:
 
-     `cf ic group create -p 8080  -m 128 --min 1 --auto --name micro-socialreview-group -n socialreviewservice -d mybluemix.net registry.ng.bluemix.net/$(cf ic namespace get)/socialreviewservice`
+     `cf ic group create -p 8080  -m 128 --min 1 --auto --name micro-socialreview-group -e eureka.client.fetchRegistry=true -e eureka.client.registerWithEureka=true -e eureka.client.serviceUrl.defaultZone=http://netflix-eureka-$(cf ic namespace get).mybluemix.net/eureka/ -n socialreviewservice -d mybluemix.net registry.ng.bluemix.net/$(cf ic namespace get)/socialreviewservice`
 
      You can view your container instance with following command:
      `cf ic ps`
