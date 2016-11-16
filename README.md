@@ -119,10 +119,10 @@ You can close the console now.
 
      `$ cf login`  
      `$ cf ic login`  
-     `$ docker tag cloudnative/socialreviewservice   registry.ng.bluemix.net/{yournamespace}/socialreviewservice`  
-     `$ docker push registry.ng.bluemix.net/{yournamespace}/socialreviewservice`  
+     `$ docker tag cloudnative/socialreviewservice registry.ng.bluemix.net/$(cf ic namespace get)/socialreviewservice`  
+     `$ docker push registry.ng.bluemix.net/$(cf ic namespace get)/socialreviewservice`  
 
-     Replace the {yournamespace} variable with your Bluemix private registry namespace. If you don't have one, create with following command:
+     "$(cf ic namespace get)" will get your Bluemix private registry namespace. If you don't have one, create with following command:
 
      `cf ic namespace get`
 
@@ -130,9 +130,9 @@ You can close the console now.
 
  - Create a container group for the image
 
-     Bluemix container group is a scalable Docker contianer runtime where auto-recovery and auto-scaling service are provided. Use the following command to create the container group for the microservice:
+     Bluemix container group is a scalable Docker container runtime where auto-recovery and auto-scaling service are provided. Use the following command to create the container group for the microservice:
 
-     `cf ic group create -p 8080  -m 512 --min 1 --auto --name micro-socialreview-group -n socialreviewservice -d mybluemix.net registry.ng.bluemix.net/{yournamespace}/socialreviewservice`
+     `cf ic group create -p 8080  -m 128 --min 1 --auto --name micro-socialreview-group -e eureka.client.fetchRegistry=true -e eureka.client.registerWithEureka=true -e eureka.client.serviceUrl.defaultZone=http://netflix-eureka-$(cf ic namespace get).mybluemix.net/eureka/ -n socialreviewservice -d mybluemix.net registry.ng.bluemix.net/$(cf ic namespace get)/socialreviewservice`
 
      You can view your container instance with following command:
      `cf ic ps`
