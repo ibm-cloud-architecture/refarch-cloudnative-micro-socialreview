@@ -20,11 +20,11 @@ import org.springframework.core.io.ClassPathResource;
 @EnableConfigurationProperties(CloudantConfig.class)
 public class EnvironmentConfig {
 
-	@Bean
-	public PropertySource<?> yamlPropertySourceLoader() throws IOException {
-		YamlPropertySourceLoader loader = new YamlPropertySourceLoader();
-		PropertySource<?> applicationYamlPropertySource = loader.load(
-				"application.yml", new ClassPathResource("application.yml"),"default");
-		return applicationYamlPropertySource;
-	}
+    @Bean
+    public PropertySource<?> yamlPropertySourceLoader() throws IOException {
+        YamlPropertySourceLoader loader = new YamlPropertySourceLoader();
+        PropertySource<?> applicationYamlPropertySource = loader.load(
+                "application.yml", new ClassPathResource("application.yml"), "default");
+        return applicationYamlPropertySource;
+    }
 }
