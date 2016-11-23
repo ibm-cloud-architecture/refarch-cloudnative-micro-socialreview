@@ -1,9 +1,5 @@
 package socialreview.cloudant;
 
-//import org.codehaus.jackson.annotate.JsonIgnoreProperties;
-//import org.codehaus.jackson.annotate.JsonProperty;
-//import org.codehaus.jackson.annotate.JsonWriteNullProperties;
-
 public class Review {
 
     private String _rev;
@@ -84,15 +80,16 @@ public class Review {
     }
 
     public String toString() {
-        return "{\n\t_rev: " + _rev
-                + ",\n\t_id: " + _id
-                + ",\n\tcomment: " + comment
-                + ",\n\titemId: " + itemId
-                + ",\n\trating: " + rating
-                + ",\n\treviewer_email: " + reviewer_email
-                + ",\n\treviewer_name: " + reviewer_name
-                + ",\n\treview_date: " + review_date
-                + "\n}";
+        return "{\n"
+                + "\t" + "_rev: " + _rev + ",\n"
+                + "\t" + "_id: " + _id + ",\n"
+                + "\t" + "comment: " + comment + ",\n"
+                + "\t" + "itemId: " + itemId + ",\n"
+                + "\t" + "rating: " + rating + ",\n"
+                + "\t" + "reviewer_email: " + reviewer_email + ",\n"
+                + "\t" + "reviewer_name: " + reviewer_name + ",\n"
+                + "\t" + "review_date: " + review_date + ",\n"
+                + "}";
     }
 
 }
