@@ -20,6 +20,6 @@ server:
 
 # Cloudant Confiugration
 cloudant:
-  username: 
-  password: 
-  host: 
+  username: 5620940d-0352-45a3-9b7e-6ca7d7df552e-bluemix
+  password: 9032855caea1b700b6ec0853a208ee8507cbdd7e6899d64a0baa5b2f143b18fe
+  host: https://5620940d-0352-45a3-9b7e-6ca7d7df552e-bluemix.cloudant.com

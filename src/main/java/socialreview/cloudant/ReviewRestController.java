@@ -48,11 +48,22 @@ public class ReviewRestController {
         System.out.println("Save Review " + review);
 
         Response r = null;
-        if (review != null) {
-            r = db.post(review);
+        String documentId = null;
+
+        try {
+            if (review != null) {
+                System.out.println("Saving review");
+                r = db.post(review);
+                System.out.println("Just saved review");
+
+                documentId = r.getId();
+                System.out.println("Document Id: " + documentId);
+            }
+        } catch (Exception e) {
+            System.out.println("Exception thrown : " + e.getMessage());
         }
 
-        return r.getId();
+        return documentId;
     }
 
 
