@@ -18,7 +18,7 @@ Login to your Bluemix console
 Open browser to create Cloudant Service using this link [https://new-console.ng.bluemix.net/catalog/services/cloudant-nosql-db](https://new-console.ng.bluemix.net/catalog/services/cloudant-nosql-db)  
 Name your Cloudant service name like `refarch-cloudantdb`
 For testing, you can select the "Shared" plan, then click "Create"
-Once created, open the credential tab to note down your Cloudant Service credential, for example:
+Once created, open the credential tab to note down your Cloudant Service credential, for example:  
 
 ```
 {
@@ -29,7 +29,7 @@ Once created, open the credential tab to note down your Cloudant Service credent
  "url": "https://xxxxx-bluemix.cloudant.com"
 }
 ```
-Then, click the "Launch" button to open the Cloudant management console.
+Then, click the "Launch" button to open the Cloudant management console.  
 In the Cloudant console, create a new empty database named: **socialreviewdb**  
 
 You can close the console now.
@@ -40,13 +40,13 @@ You can close the console now.
 
  You can either use Cloudant local or IBM Cloudant managed account. Once you have cloudant setup, update the src/resources/application.yml file for the Cloudant credential:
 
-   
-   # Cloudant Configuration
-   cloudant:
+```yml
+    # Cloudant Configuration
+    cloudant:
     username: {your_cloudant_username}
     password: {your_cloudant_password}
     host: {your_cloudant_host}
-    ```
+```
 
  - Run following command to build the application:
 
