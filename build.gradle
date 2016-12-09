@@ -90,9 +90,9 @@ test {
     }
 }
 
-task test_deploy(type: Test) {
+task integration(type: Test) {
     useJUnit()
-    include '**/DeployTest.class'
+    include '**/IntegrationTest.class'
     testLogging {
         events 'started', 'passed'
         showStandardStreams = true

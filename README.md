@@ -14,10 +14,10 @@ This project is built to demonstrate how to build a Spring Boot Microservices ap
 
 ## Provision Cloudant Database in Bluemix:
 
-Login to your Bluemix console  
+Login to your Bluemix console
 Open browser to create Cloudant Service using this link [https://new-console.ng.bluemix.net/catalog/services/cloudant-nosql-db](https://new-console.ng.bluemix.net/catalog/services/cloudant-nosql-db)  
-Name your Cloudant service name like `refarch-cloudantdb`  
-For testing, you can select the "Shared" plan, then click "Create"  
+Name your Cloudant service name like `refarch-cloudantdb`
+For testing, you can select the "Shared" plan, then click "Create"
 Once created, open the credential tab to note down your Cloudant Service credential, for example:
 
 ```
@@ -29,7 +29,7 @@ Once created, open the credential tab to note down your Cloudant Service credent
  "url": "https://xxxxx-bluemix.cloudant.com"
 }
 ```
-Then, click the "Launch" button to open the Cloudant management console.  
+Then, click the "Launch" button to open the Cloudant management console.
 In the Cloudant console, create a new empty database named: **socialreviewdb**  
 
 You can close the console now.
@@ -40,8 +40,8 @@ You can close the console now.
 
  You can either use Cloudant local or IBM Cloudant managed account. Once you have cloudant setup, update the src/resources/application.yml file for the Cloudant credential:
 
-   ```yml
-   # Cloudant Confiugration
+   
+   # Cloudant Configuration
    cloudant:
     username: {your_cloudant_username}
     password: {your_cloudant_password}
@@ -56,9 +56,13 @@ You can close the console now.
 
  	`$ java -jar build/libs/micro-soialreview-0.1.0.jar`
 
+ - To run unit test case:
+ 
+   `$ ./gradlew test`
+    
  - To run integration test case:
-
-  `$ ./gradlew test`  
+ 
+   `$ ./gradlew integration` 
 
  - Validate the application
 
@@ -92,17 +96,17 @@ You can close the console now.
 
 - Build the docker image:
 
-    `$ cd docker`  
+    `$ cd docker`
     `$ docker build -t cloudnative/socialreviewservice .`
 
 - Run the local docker image
 
     `$ docker run -d -p 8080:8080 --name socialreview cloudnative/socialreviewservice`
 
-    You can check your docker instance with command:  
+    You can check your docker instance with command:
     `docker ps`  
 
-    if you'd like to see the logs of the docker instance, use following command:  
+    if you'd like to see the logs of the docker instance, use following command:
     `$ docker logs {container-id}`  
 
     You can validate the docker application at:
@@ -117,9 +121,9 @@ You can close the console now.
 
  - Tag and Push the microservice docker image to Bluemix registry
 
-     `$ cf login`  
-     `$ cf ic login`  
-     `$ docker tag cloudnative/socialreviewservice registry.ng.bluemix.net/$(cf ic namespace get)/socialreviewservice`  
+     `$ cf login`
+     `$ cf ic login`
+     `$ docker tag cloudnative/socialreviewservice registry.ng.bluemix.net/$(cf ic namespace get)/socialreviewservice`
      `$ docker push registry.ng.bluemix.net/$(cf ic namespace get)/socialreviewservice`  
 
      "$(cf ic namespace get)" will get your Bluemix private registry namespace. If you don't have one, create with following command:
