@@ -15,7 +15,7 @@ apply plugin: 'spring-boot'
 apply plugin: 'io.spring.dependency-management'
 
 jar {
-    baseName = 'micro-soialreview'
+    baseName = 'micro-socialreview'
     version = '0.1.0'
 }
 
@@ -77,10 +77,22 @@ dependencies {
     // https://mvnrepository.com/artifact/ch.qos.logback/logback-core
     //compile group: 'ch.qos.logback', name: 'logback-core', version: '1.1.7'
     testCompile('junit:junit:[4,)')
+    testCompile('io.rest-assured:rest-assured:3.0.1')
+    testCompile('org.glassfish.jersey.containers:jersey-container-servlet:2.14')
 }
 
 test {
     useJUnit()
+    exclude '**/DeployTest.class'
+    testLogging {
+        events 'started', 'passed'
+        showStandardStreams = true
+    }
+}
+
+task integration(type: Test) {
+    useJUnit()
+    include '**/IntegrationTest.class'
     testLogging {
         events 'started', 'passed'
         showStandardStreams = true
@@ -90,10 +102,10 @@ test {
 task docker {
     doLast {
         copy {
-            from 'build/libs/micro-soialreview-0.1.0.jar'
+            from 'build/libs/micro-socialreview-0.1.0.jar'
             into 'docker'
         }
-        file("docker/micro-soialreview-0.1.0.jar").renameTo(file("docker/app.jar"))
+        file("docker/micro-socialreview-0.1.0.jar").renameTo(file("docker/app.jar"))
 
     }
 }
