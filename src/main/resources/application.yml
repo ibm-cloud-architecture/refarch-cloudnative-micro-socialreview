@@ -20,6 +20,6 @@ server:
 
 # Cloudant Confiugration
 cloudant:
-  username: 
-  password: 
-  host: 
+  username:
+  password:
+  host:

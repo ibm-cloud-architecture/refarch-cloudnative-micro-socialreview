@@ -14,11 +14,11 @@ This project is built to demonstrate how to build a Spring Boot Microservices ap
 
 ## Provision Cloudant Database in Bluemix:
 
-Login to your Bluemix console  
+Login to your Bluemix console
 Open browser to create Cloudant Service using this link [https://new-console.ng.bluemix.net/catalog/services/cloudant-nosql-db](https://new-console.ng.bluemix.net/catalog/services/cloudant-nosql-db)  
-Name your Cloudant service name like `refarch-cloudantdb`  
-For testing, you can select the "Shared" plan, then click "Create"  
-Once created, open the credential tab to note down your Cloudant Service credential, for example:
+Name your Cloudant service name like `refarch-cloudantdb`
+For testing, you can select the "Shared" plan, then click "Create"
+Once created, open the credential tab to note down your Cloudant Service credential, for example:  
 
 ```
 {
@@ -40,13 +40,13 @@ You can close the console now.
 
  You can either use Cloudant local or IBM Cloudant managed account. Once you have cloudant setup, update the src/resources/application.yml file for the Cloudant credential:
 
-   ```yml
-   # Cloudant Confiugration
-   cloudant:
+```yml
+    # Cloudant Configuration
+    cloudant:
     username: {your_cloudant_username}
     password: {your_cloudant_password}
     host: {your_cloudant_host}
-    ```
+```
 
  - Run following command to build the application:
 
@@ -54,11 +54,15 @@ You can close the console now.
 
  - To run the app:
 
- 	`$ java -jar build/libs/micro-soialreview-0.1.0.jar`
+ 	`$ java -jar build/libs/micro-socialreview-0.1.0.jar`
 
- - To run integration test case:
-
-  `$ ./gradlew test`  
+ - To run unit test case (which will instantiate an ephemeral SpringBoot Container):
+ 
+   `$ ./gradlew test`
+    
+ - To run integration test case (which runs API test against a running instance, local or remote):  
+   `$ export service_url="http://localhost:8080"`  
+   `$ ./gradlew integration` 
 
  - Validate the application
 
@@ -130,11 +134,11 @@ You can close the console now.
 
  - Create a container group for the image
 
-     Bluemix container group is a scalable Docker container runtime where auto-recovery and auto-scaling service are provided. Use the following command to create the container group for the microservice:
+     Bluemix container group is a scalable Docker container runtime where auto-recovery and auto-scaling service are provided. Use the following command to create the container group for the microservice:  
 
      `cf ic group create -p 8080  -m 128 --min 1 --auto --name micro-socialreview-group -e eureka.client.fetchRegistry=true -e eureka.client.registerWithEureka=true -e eureka.client.serviceUrl.defaultZone=http://netflix-eureka-$(cf ic namespace get).mybluemix.net/eureka/ -n socialreviewservice -d mybluemix.net registry.ng.bluemix.net/$(cf ic namespace get)/socialreviewservice`
 
-     You can view your container instance with following command:
+     You can view your container instance with following command:  
      `cf ic ps`
 
      Or you can log on to Bluemix console to review container instances under the Compute/Containers tab.

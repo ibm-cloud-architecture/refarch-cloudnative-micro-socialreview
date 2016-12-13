@@ -14,11 +14,13 @@ import org.springframework.boot.context.embedded.MimeMappings;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
+
 import javax.annotation.Resource;
 
 import com.cloudant.client.api.CloudantClient;
 import com.cloudant.client.api.ClientBuilder;
 import com.cloudant.client.api.Database;
+
 import java.util.List;
 import java.net.URL;
 
@@ -40,40 +42,39 @@ public class Application {
     }
 
     @Resource
-	  private CloudantConfig dbconfig;
+    private CloudantConfig dbconfig;
 
     @Bean
-    public Database cloudantclient () {
+    public Database cloudantclient() {
 
-      Database db = null;
-      try {
+        Database db = null;
+        try {
 
-        CloudantClient client = ClientBuilder.url(new URL(dbconfig.getHost()))
+            CloudantClient client = ClientBuilder.url(new URL(dbconfig.getHost()))
                     .username(dbconfig.getUsername())
                     .password(dbconfig.getPassword())
                     .build();
 
-         // Show the server version
-         System.out.println("Server Version: " + client.serverVersion());
-         // Get a List of all the databases this Cloudant account
-         List<String> databases = client.getAllDbs();
-         System.out.println("All my databases : ");
-         for ( String dbl : databases ) {
-           System.out.println(dbl);
-          }
+            // Show the server version
+            System.out.println("Server Version: " + client.serverVersion());
+            // Get a List of all the databases this Cloudant account
+            List<String> databases = client.getAllDbs();
+            System.out.println("All my databases : ");
+            for (String dbl : databases) {
+                System.out.println(dbl);
+            }
 
-          //Get socialReview db
-          // Get a Database instance to interact with, but don't create it if it doesn't already exist
-          db = client.database("socialreviewdb", true);
-          System.out.println(db.info().toString());
+            //Get socialReview db
+            // Get a Database instance to interact with, but don't create it if it doesn't already exist
+            db = client.database("socialreviewdb", true);
+            System.out.println(db.info().toString());
 
-      }catch (Exception e)
-      {
-        e.printStackTrace();
-      }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
 
-    return db;
-  }
+        return db;
+    }
 
 
 }
