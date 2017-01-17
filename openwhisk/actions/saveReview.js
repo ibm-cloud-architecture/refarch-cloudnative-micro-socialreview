@@ -1,12 +1,11 @@
-
 var Promise = require('promise');
 
 function getCloudantCredential(param) {
     var cloudantUrl;
 
-    if (param.url) {
+    if (param.cloudant_url) {
         // use bluemix binding
-        cloudantUrl = param.url;
+        cloudantUrl = param.cloudant_url;
     } else {
         if (!param.host) {
             whisk.error('cloudant account host is required.');
@@ -24,8 +23,8 @@ function getCloudantCredential(param) {
         cloudantUrl = "https://" + param.username + ":" + param.password + "@" + param.host;
     }
 
-    if (!param.db) {
-        whisk.error('cloudant db is required.');
+    if (!param.cloudant_staging_db) {
+        whisk.error('cloudant staging db is required.');
         return;
     }
 
@@ -34,16 +33,90 @@ function getCloudantCredential(param) {
         plugin:'default'
     });
 
-    return cloudant.db.use(param.db);
+    return cloudant;
+}
+
+function getDatabase(params) {
+    var cloudant = params.cloudant;
+    var review = params.review;
+    var dbName = params.dbName;
+    console.log('getDatabase:');
+
+    return new Promise(function(resolve, reject) {
+        console.log("Getting database: ", dbName);
+        cloudant.db.get(dbName, function(error, response) {
+            if (!error) {
+                console.log('success: database found', response);
+                resolve({
+                    cloudant: cloudant,
+                    review: review,
+                    dbName: dbName,
+                    createDatabase: false
+                });
+            } else {
+                // TODO: 404?
+                if (error.statusCode == 404) {
+                    console.log('database ', dbName, ' was not found, will attempt to create ...');
+                    resolve({
+                        cloudant: cloudant,
+                        review: review,
+                        dbName: dbName,
+                        createDatabase: true
+                    });
+                    return;
+                }
+
+                console.error('Unable to get database: ', error);
+                reject(error);
+            }
+        });
+    });
+
+}
+
+function createDatabase(params) {
+    var cloudant = params.cloudant;
+    var review = params.review;
+    var dbName = params.dbName;
+
+    return new Promise(function(resolve, reject) {
+        if (params.createDatabase == false) {
+            console.log('Database already exists, inserting record ...');
+            resolve({
+                cloudant: cloudant,
+                review: review,
+                dbName: dbName
+            });
+            return;
+        }
+
+        console.log("Creating database: ", dbName);
+
+        cloudant.db.create(dbName, function(error, response) {
+            if (!error) {
+                console.log('success', response);
+                resolve({
+                    cloudant: cloudant,
+                    review: review,
+                    dbName: dbName
+                });
+            } else {
+                console.log('error', error);
+                reject(error);
+            }
+        });
+    });
+
 }
 
 function insertRecord(params) {
-
-    var cloudantdb = params.cloudantdb;
+    var cloudant = params.cloudant;
     var review = params.review;
+    var dbName = params.dbName;
 
     return new Promise(function(resolve, reject) {
         console.log("inserting review: ", review);
+        var cloudantdb = cloudant.db.use(dbName);
         cloudantdb.insert(review, function(err, body) {
             if (!err) {
                 //console.log("updated message, response: ", body);
@@ -86,13 +159,17 @@ function main(params) {
         return whisk.error('getCloudantAccount returned an unexpected object type.');
     }
 
-    var cloudantdb = cloudantOrError;
+    var cloudant = cloudantOrError;
 
-    // write each message to cloudant DB
-    Promise.resolve({
-        cloudantdb: cloudantdb,
-        review: review
-    }).then(insertRecord)
+    // write each message to cloudant staging DB
+    return Promise.resolve({
+        cloudant: cloudant,
+        review: review,
+        dbName: params.cloudant_staging_db
+    })
+      .then(getDatabase)
+      .then(createDatabase)
+      .then(insertRecord)
       .then(function (body) {
         return {
             'result': 'OK',
@@ -107,3 +184,15 @@ function main(params) {
     });
 }
 
+/*
+var fs = require('fs');
+var paramsStr = fs.readFileSync('socialReviewParams.json');
+var params = JSON.parse(paramsStr);
+
+params['itemId'] = 13401;
+params['rating'] = 2;
+params['reviewer_name'] = 'Jeffrey Kwong';
+params['comment'] = 'Not so good';
+
+main(params);
+*/

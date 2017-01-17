@@ -4,9 +4,9 @@ var Promise = require('promise');
 function getCloudantCredential(param) {
     var cloudantUrl;
 
-    if (param.url) {
+    if (param.cloudant_url) {
         // use bluemix binding
-        cloudantUrl = param.url;
+        cloudantUrl = param.cloudant_url;
     } else {
         if (!param.host) {
             whisk.error('cloudant account host is required.');
@@ -24,7 +24,7 @@ function getCloudantCredential(param) {
         cloudantUrl = "https://" + param.username + ":" + param.password + "@" + param.host;
     }
 
-    if (!param.db) {
+    if (!param.cloudant_reviews_db) {
         whisk.error('cloudant db is required.');
         return;
     }
@@ -34,7 +34,7 @@ function getCloudantCredential(param) {
         plugin:'default'
     });
 
-    return cloudant.db.use(param.db);
+    return cloudant.db.use(param.cloudant_reviews_db);
 }
 
 function getRecord(cloudantdb, id) {
@@ -65,6 +65,12 @@ function getRecord(cloudantdb, id) {
                 resolve(result);
             });
     });
+}
+
+function createTable(cloudantdb, table) {
+}
+
+function createIndex(cloudantdb, index) {
 }
 
 /**
