@@ -1,8 +1,0 @@
-{
-    "cloudant_url": "",
-    "cloudant_staging_db": "socialreviewdb-staging",
-    "cloudant_reviews_db": "socialreviewdb",
-    "watson_url": "https://gateway.watsonplatform.net/tone-analyzer/api",
-    "watson_password": "",
-    "watson_username": ""
-}
