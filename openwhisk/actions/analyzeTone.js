@@ -23,7 +23,7 @@ function getCloudantCredential(param) {
         cloudantUrl = "https://" + param.username + ":" + param.password + "@" + param.host;
     }
 
-    if (!param.cloudant_staging_db) {
+    if (!param.cloudant_reviews_db) {
         whisk.error('cloudant staging db is required.');
         return;
     }
@@ -39,10 +39,11 @@ function getCloudantCredential(param) {
 function getCloudantChange(params) {
     var dbName = params.dbname;
     var cloudant = params.cloudant;
+    var id = params.id
 
     return new Promise(function(resolve, reject) {
         var cloudantdb = cloudant.db.use(dbName);
-        cloudantdb.get(params.id, function(error, response) {
+        cloudantdb.get(id, function(error, response) {
             console.log(response);
 
             if (!error) {
