@@ -223,5 +223,11 @@ function main(params) {
             return { 
                 result: "OK"
             };
+        })
+        .catch(function(error) {
+            return {
+                result: "error",
+                error: error
+            }
         });
 }
