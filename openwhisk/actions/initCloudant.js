@@ -218,5 +218,10 @@ function main(params) {
         .then(getDatabase)
         .then(createDatabase)
         .then(getIndex)
-        .then(createIndex);
+        .then(createIndex)
+        .then(function(data) {
+            return { 
+                result: "OK"
+            };
+        });
 }
