@@ -23,8 +23,8 @@ function getCloudantCredential(param) {
         cloudantUrl = "https://" + param.username + ":" + param.password + "@" + param.host;
     }
 
-    if (!param.cloudant_staging_db) {
-        whisk.error('cloudant staging db is required.');
+    if (!param.cloudant_reviews_db) {
+        whisk.error('cloudant db is required.');
         return;
     }
 
@@ -36,86 +36,13 @@ function getCloudantCredential(param) {
     return cloudant;
 }
 
-function getDatabase(params) {
-    var cloudant = params.cloudant;
-    var review = params.review;
-    var dbName = params.dbName;
-    console.log('getDatabase:');
-
-    return new Promise(function(resolve, reject) {
-        console.log("Getting database: ", dbName);
-        cloudant.db.get(dbName, function(error, response) {
-            if (!error) {
-                console.log('success: database found', response);
-                resolve({
-                    cloudant: cloudant,
-                    review: review,
-                    dbName: dbName,
-                    createDatabase: false
-                });
-            } else {
-                // TODO: 404?
-                if (error.statusCode == 404) {
-                    console.log('database ', dbName, ' was not found, will attempt to create ...');
-                    resolve({
-                        cloudant: cloudant,
-                        review: review,
-                        dbName: dbName,
-                        createDatabase: true
-                    });
-                    return;
-                }
-
-                console.error('Unable to get database: ', error);
-                reject(error);
-            }
-        });
-    });
-
-}
-
-function createDatabase(params) {
-    var cloudant = params.cloudant;
-    var review = params.review;
-    var dbName = params.dbName;
-
-    return new Promise(function(resolve, reject) {
-        if (params.createDatabase == false) {
-            console.log('Database already exists, inserting record ...');
-            resolve({
-                cloudant: cloudant,
-                review: review,
-                dbName: dbName
-            });
-            return;
-        }
-
-        console.log("Creating database: ", dbName);
-
-        cloudant.db.create(dbName, function(error, response) {
-            if (!error) {
-                console.log('success', response);
-                resolve({
-                    cloudant: cloudant,
-                    review: review,
-                    dbName: dbName
-                });
-            } else {
-                console.log('error', error);
-                reject(error);
-            }
-        });
-    });
-
-}
-
 function insertRecord(params) {
     var cloudant = params.cloudant;
     var review = params.review;
-    var dbName = params.dbName;
+    var dbName = params.cloudant_reviews_db + "-staging";
 
     return new Promise(function(resolve, reject) {
-        console.log("inserting review: ", review);
+        console.log("inserting review into ", dbName, ": ", review);
         var cloudantdb = cloudant.db.use(dbName);
         cloudantdb.insert(review, function(err, body) {
             if (!err) {
@@ -144,7 +71,7 @@ function main(params) {
     var review = {
         itemId: parseInt(params.itemId),
         review_date: params.review_date,
-        rating: params.rating,
+        rating: parseInt(params.rating),
         reviewer_name: params.reviewer_name,
         reviewer_email: params.reviewer_email,
         comment: params.comment
@@ -162,13 +89,8 @@ function main(params) {
     var cloudant = cloudantOrError;
 
     // write each message to cloudant staging DB
-    return Promise.resolve({
-        cloudant: cloudant,
-        review: review,
-        dbName: params.cloudant_staging_db
-    })
-      .then(getDatabase)
-      .then(createDatabase)
+    params['review'] = review;
+    return Promise.resolve(params)
       .then(insertRecord)
       .then(function (body) {
         return {

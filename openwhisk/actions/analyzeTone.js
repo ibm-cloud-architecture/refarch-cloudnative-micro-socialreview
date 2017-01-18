@@ -1,5 +1,4 @@
 var request = require('request-promise');
-var process = require('process');
 
 function getCloudantCredential(param) {
     var cloudantUrl;
@@ -37,6 +36,27 @@ function getCloudantCredential(param) {
     return cloudant;
 }
 
+function getCloudantChange(params) {
+    var dbName = params.dbname;
+    var cloudant = params.cloudant;
+
+    return new Promise(function(resolve, reject) {
+        var cloudantdb = cloudant.db.use(dbName);
+        cloudantdb.get(params.id, function(error, response) {
+            console.log(response);
+
+            if (!error) {
+                console.log('success', response);
+                params['review'] = response;
+                resolve(params);
+            } else {
+                console.error('error', error);
+                reject(error);
+            }
+        });
+    });
+}
+
 function analyzeText(params) {
     var watsonURL = params.watson_url + "/v3/tone?version=2016-05-19"
     var watsonAuth = new Buffer(params.watson_username + ":" + params.watson_password).toString('base64');
@@ -66,163 +86,6 @@ function analyzeText(params) {
 
             return err;
         });
-}
-
-function getCloudantChange(params) {
-    var dbName = params.dbName;
-    var cloudant = params.cloudant;
-
-    return new Promise(function(resolve, reject) {
-        var cloudantdb = cloudant.db.use(dbName);
-        cloudantdb.get(params.id, function(error, response) {
-            console.log(response);
-
-            if (!error) {
-                console.log('success', response);
-                params['review'] = response;
-                resolve(params);
-            } else {
-                console.error('error', error);
-                reject(error);
-            }
-        });
-    });
-}
-
-function getDatabase(params) {
-    var cloudant = params.cloudant;
-    var review = params.review;
-    var dbName = params.cloudant_reviews_db;
-    console.log('getDatabase:');
-
-    return new Promise(function(resolve, reject) {
-        console.log("Getting database: ", dbName);
-        cloudant.db.get(dbName, function(error, response) {
-            if (!error) {
-                console.log('success: database found', response);
-                params['createDatabase'] = false;
-                resolve(params);
-                return;
-            } else if (error.statusCode == 404) {
-                console.log('database ', dbName, ' was not found, will attempt to create ...');
-                params['createDatabase'] = true;
-                resolve(params);
-                return;
-            }
-
-            console.error('Unable to get database: ', error);
-            reject(error);
-        });
-    });
-
-}
-
-function createDatabase(params) {
-    var cloudant = params.cloudant;
-    var dbName = params.cloudant_reviews_db;
-
-    return new Promise(function(resolve, reject) {
-        if (params.createDatabase == false) {
-            console.log('Database already exists, inserting record ...');
-            resolve(params);
-            return;
-        }
-
-        console.log("Creating database: ", dbName);
-
-        cloudant.db.create(dbName, function(error, response) {
-            if (!error) {
-                console.log('success', response);
-                resolve(params);
-            } else {
-                console.log('error', error);
-                reject(error);
-            }
-        });
-    });
-}
-
-function getIndex(params) {
-    var cloudant = params.cloudant;
-    var dbName = params.cloudant_reviews_db;
-
-    return new Promise(function (resolve, reject) {
-        var cloudantdb = cloudant.db.use(dbName);
-
-        cloudantdb.index(function (er, result) {
-            params['indexExists'] = false;
-            if (er) {
-                reject(er);
-            }
-
-            console.log('The database has %d indexes', result.indexes.length);
-            for (var i = 0; i < result.indexes.length; i++) {
-                if (result.indexes[i].name == 'itemIdIndex') {
-                    params['indexExists'] = true;
-                }
-                console.log('  %s (%s): %j', result.indexes[i].name, result.indexes[i].type, result.indexes[i].def);
-            }           
-
-
-            resolve(params);
-        });
-    });
-
-
-}
-
-function createIndex(params) {
-    var cloudant = params.cloudant;
-    var dbName = params.cloudant_reviews_db;
-
-    return new Promise(function (resolve, reject) {
-        if (params['indexExists'] == true) {
-            console.log("index already exists, inserting record");
-            resolve(params);
-            return;
-        }
-
-        var item_indexer = function(doc) {
-            if (doc.itemId) {
-                index('itemId', doc.itemId);
-            }
-        };
-
-        var ddoc = {
-            _id: '_design/itemIdIndex',
-            language: "query",
-            views: {
-                itemIdIndex: {
-                    map: {
-                        fields: {
-                            itemId: "asc"
-                        }
-                    },
-                    reduce: "_count",
-                    options: {
-                        def: {
-                            fields: [
-                                "itemId"
-                            ]
-                        }
-                    }
-                }
-            }        
-        };
-
-        var cloudantdb = cloudant.db.use(dbName);
-
-        cloudantdb.insert(ddoc, function (er, result) {
-            if (er) {
-                reject(er);
-            }
-            console.log("Created itemId index");
-
-            resolve(params);
-
-        });
-    });
-
 }
 
 function insertRecord(params) {
@@ -257,19 +120,12 @@ function main(params) {
     }
 
     var cloudant = cloudantOrError;
-    var options = params;
-    options['dbName'] = params.cloudant_staging_db;
-    options['cloudant'] = cloudant;
+    params['cloudant'] = cloudant;
 
-    return Promise.resolve(options)
+    return Promise.resolve(params)
         .then(getCloudantChange)
         .then(analyzeText)
-        .then(getDatabase)
-        .then(createDatabase)
-        .then(getIndex)
-        .then(createIndex)
         .then(insertRecord);
-
 }
 
 /*
