@@ -59,7 +59,7 @@ function getCloudantChange(params) {
 }
 
 function analyzeText(params) {
-    var watsonURL = params.watson_url + "/v3/tone?version=2016-05-19"
+    var watsonURL = params.watson_url + "/v3/tone?version=2016-05-19";
     var watsonAuth = new Buffer(params.watson_username + ":" + params.watson_password).toString('base64');
     console.log('text to analyze: ', params.review.comment);
 
@@ -76,8 +76,32 @@ function analyzeText(params) {
 
     return request(requestOptions).
         then(function(parsedBody) {
-            console.log(parsedBody, null, 4);
-            params['analysis'] = parsedBody;
+            console.log("watson analysis:", parsedBody);
+            var doc_analysis = JSON.parse(parsedBody);
+
+            // parse the watson response. 
+
+            var max_doc_tone = 0.0;
+            var max_emotion = "";
+            for (i = 0; i < doc_analysis.document_tone.tone_categories[0].tones.length; i++) {
+                var emotion_tone = doc_analysis.document_tone.tone_categories[0].tones[i];
+
+                console.log("emotion: ", emotion_tone.tone_id, ", score: ", emotion_tone.score);
+                if (max_doc_tone < emotion_tone.score) {
+                    max_doc_tone = emotion_tone.score;
+                    max_emotion = emotion_tone.tone_id.trim();
+                }
+            }
+
+            params['db_to_insert'] = params.cloudant_reviews_db;
+            console.log("The max emotion was: ", max_emotion, ", score: ", max_doc_tone);
+
+            if (max_emotion != "joy") {
+                console.log("Flagging comment!");
+                params['db_to_insert'] = params.cloudant_reviews_db + "-flagged";
+            } 
+
+            params['review']['analysis'] = doc_analysis;
 
             return Promise.resolve(params);
 
@@ -91,9 +115,8 @@ function analyzeText(params) {
 
 function insertRecord(params) {
     var cloudant = params.cloudant;
-    var dbName = params.cloudant_reviews_db;
+    var dbName = params.db_to_insert;
     var review = params.review;
-    console.log(params);
 
     delete review._rev;
 
@@ -113,7 +136,6 @@ function insertRecord(params) {
 }
 
 function main(params) {
-    console.log("params:", params);
 
     var cloudantOrError = getCloudantCredential(params);
     if (typeof cloudantOrError !== 'object') {

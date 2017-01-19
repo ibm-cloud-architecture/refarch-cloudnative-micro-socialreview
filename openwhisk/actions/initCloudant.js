@@ -46,6 +46,18 @@ function createStagingDatabase(params) {
     return _createDatabase(params);
 }
 
+function getFlaggedDatabase(params) {
+    params['dbname'] = params.cloudant_reviews_db + '-flagged';
+
+    return _getDatabase(params);
+}
+
+function createFlaggedDatabase(params) {
+    params['dbname'] = params.cloudant_reviews_db + '-flagged';
+
+    return _createDatabase(params);
+}
+
 function getDatabase(params) {
     params['dbname'] = params.cloudant_reviews_db;
 
@@ -215,6 +227,8 @@ function main(params) {
     return Promise.resolve(params)
         .then(getStagingDatabase)
         .then(createStagingDatabase)
+        .then(getFlaggedDatabase)
+        .then(createFlaggedDatabase)
         .then(getDatabase)
         .then(createDatabase)
         .then(getIndex)
