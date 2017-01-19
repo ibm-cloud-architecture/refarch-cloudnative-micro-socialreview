@@ -1,0 +1,115 @@
+---
+stages:
+- name: Deploy
+  inputs:
+  - service: ${REPO}
+    type: git
+    branch: master
+    dir_name: null
+  triggers:
+  - type: commit
+  properties:
+  - name: OPENWHISK_API_ENDPOINT
+    value: ${OPENWHISK_API_ENDPOINT}
+    type: text
+  - name: OPENWHISK_AUTH_KEY
+    value: ${OPENWHISK_AUTH_KEY}
+    type: secure
+  jobs:
+  - name: Deploy
+    type: deployer
+    target:
+      region_id: ${REGION}
+      organization: ${ORG}
+      space: ${SPACE}
+      application: socialreview
+    script: |+
+      #!/bin/bash
+
+      set -x
+      # download openwhisk cli
+      if [ ! -f ./wsk ]; then
+          wget https://openwhisk.ng.bluemix.net/cli/go/download/linux/amd64/wsk
+          chmod u+x wsk
+      fi
+
+      # set up openwhisk cli
+      ./wsk property set --apihost ${OPENWHISK_API_ENDPOINT} --auth ${OPENWHISK_AUTH_KEY}
+
+      # download jq
+      if [ ! -f ./jq ]; then
+          wget https://github.com/stedolan/jq/releases/download/jq-1.5/jq-linux64
+          mv jq-linux64 jq
+          chmod u+x jq
+      fi
+
+      # get cloudant credentials
+      cloudant_svc=`cf services | grep cloudantNoSQLDB | sed -e 's/cloudantNoSQLDB.*$//g' -e 's/\s//g'`
+      cloudant_svc_key_name=`cf service-keys "${cloudant_svc}" | tail -1`
+      cloudant_svc_url=`cf service-key "${cloudant_svc}" "${cloudant_svc_key_name}" | grep -v "Getting key " | ./jq '.url' | sed 's/\"//g'`
+
+      # get watson tone analyzer credentials
+      watson_svc=`cf services | grep tone_analyzer | sed -e 's/tone_analyzer.*$//g' -e 's/\s*$//g'`
+      watson_svc_key_name=`cf service-keys "${watson_svc}" | tail -1`
+      watson_svc_cred=`cf service-key "${watson_svc}" "${watson_svc_key_name}" | grep -v "Getting key "`
+
+      watson_url=`echo ${watson_svc_cred} | ./jq .url | sed 's/\"//g'`
+      watson_username=`echo ${watson_svc_cred} | ./jq .username | sed 's/\"//g'`
+      watson_password=`echo ${watson_svc_cred} | ./jq .password | sed 's/\"//g'`
+
+      # create openwhisk package
+      ./wsk package refresh
+
+      set +e
+
+      echo "Create package socialreview ..."
+      ./wsk package get -s socialreview || \
+          ./wsk package create socialreview --param cloudant_url ${cloudant_svc_url} --param watson_url ${watson_url} --param watson_password ${watson_password} --param watson_username ${watson_username} --param cloudant_reviews_db socialreviewdb
+
+
+      echo "Creating socialreview/getReviews ..."
+      ./wsk action get -s socialreview/getReviews && \
+          ./wsk action update socialreview/getReviews openwhisk/actions/getReviews.js || \
+          ./wsk action create socialreview/getReviews openwhisk/actions/getReviews.js
+
+      echo "Creating socialreview/saveReview ..."
+      ./wsk action get -s socialreview/saveReview && \
+          ./wsk action update socialreview/saveReview openwhisk/actions/saveReview.js || \
+          ./wsk action create socialreview/saveReview openwhisk/actions/saveReview.js
+
+      echo "Creating socialreview/initCloudant ..."
+      ./wsk action get -s socialreview/initCloudant && \
+          ./wsk action update socialreview/initCloudant openwhisk/actions/initCloudant.js || \
+          ./wsk action create socialreview/initCloudant openwhisk/actions/initCloudant.js
+
+      echo "Creating socialreview/analyzeTone ..."
+      ./wsk action get -s socialreview/analyzeTone && \
+          ./wsk action update socialreview/analyzeTone openwhisk/actions/analyzeTone.js || \
+          ./wsk action create socialreview/analyzeTone openwhisk/actions/analyzeTone.js
+
+      echo "Creating REST API GET /api/reviews/list ..."
+      ./wsk api-experimental list /api | grep /reviews/list | grep get || \
+          ./wsk api-experimental create /api /reviews/list get socialreview/getReviews
+
+      echo "Creating REST API POST /api/reviews/comment ..."
+      ./wsk api-experimental list /api | grep /reviews/comment | grep post || \
+          ./wsk api-experimental create /api /reviews/comment post socialreview/saveReview
+
+      echo "Invoking socialreview/initCloudant ..."
+      ./wsk action invoke socialreview/initCloudant --blocking
+
+      # get the cloudant package
+      cloudant_package=`./wsk package list | grep "${cloudant_svc_key_name}" | awk '{print $1;}'`
+      echo "Creating trigger reviewTrigger for feed ${cloudant_package}/changes on db socialreviewdb-staging ..."
+      ./wsk trigger get -s reviewTrigger || \
+          ./wsk trigger create reviewTrigger --feed ${cloudant_package}/changes --param dbname socialreviewdb-staging
+
+      echo "Creating rule handleReviewPosted on reviewTrigger ..."
+      ./wsk rule get -s handleReviewPosted || \
+          ./wsk rule create handleReviewPosted reviewTrigger socialreview/analyzeTone
+
+hooks:
+- enabled: true
+  label: null
+  ssl_enabled: false
+  url: https://devops-api.ng.bluemix.net/v1/messaging/webhook/publish
