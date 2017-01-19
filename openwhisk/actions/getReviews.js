@@ -67,12 +67,6 @@ function getRecord(cloudantdb, id) {
     });
 }
 
-function createTable(cloudantdb, table) {
-}
-
-function createIndex(cloudantdb, index) {
-}
-
 /**
   *
   * main() will be invoked when you Run This Action.
@@ -103,6 +97,12 @@ function main(params) {
     // read profile from cloudant DB
     return getRecord(cloudantdb, id).then(function (data) {
         //console.log("the answer:", data.docs);
+        for (i = 0; i < data.docs.length; i++) {
+            var doc = data.docs[i];
+            delete doc._id;
+            delete doc.analysis;
+            delete doc._rev;
+        }
         return data;
     });
 }
