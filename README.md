@@ -22,7 +22,7 @@ This project is built to demonstrate how to build a Microservices application im
 2. Open browser to create Cloudant Service using this link [https://console.ng.bluemix.net/catalog/services/cloudant-nosql-db](https://console.ng.bluemix.net/catalog/services/cloudant-nosql-db)  
 3. Name your Cloudant service name like `refarch-cloudantdb`  
 4. For testing, you can select the "Shared" plan, then click "Create"  
-5. Once the service has been created, note the service credentials under "Service Credentials".  In particular, the Social Review microservice requires the `url` property.
+5. Once the service has been created, note the service credentials under `Service Credentials`.  In particular, the Social Review microservice requires the `url` property.
 
 ### Provision Watson Tone Analyzer in Bluemix
 
@@ -30,7 +30,7 @@ This project is built to demonstrate how to build a Microservices application im
 2. Open browser to create the Watson Tone Analyzer service using this link [https://console.ng.bluemix.net/catalog/services/tone-analyzer/](https://console.ng.bluemix.net/catalog/services/tone-analyzer/)
 3. Name your Watson Tone Analyzer service like `refarch-watson-tone-analyzer`
 4. For testing, you can select the "standard" plan, then click "Create"
-5. Once the service has been created, note the service credentials under "Service Credentials".  In particular, the Social Review microservice requires the "username", "password", and "url" properties.
+5. Once the service has been created, note the service credentials under `Service Credentials`.  In particular, the Social Review microservice requires the `username`, `password`, and `url` properties.
 
 ## Deploy to BlueMix
 
@@ -88,13 +88,13 @@ You can use the following button to deploy the Social Review microservice to Blu
    # wsk api-experimental create /api /reviews/comment post socialReview/saveReview
    ```
 
-5. Create an OpenWhisk trigger called `reviewTrigger` on the Cloudant database `socialreviewdb-staging`.  This uses the Whisk built-in trigger from the generated Cloudant package.  Initially, posted reviews are saved to this database.
+5. Create an OpenWhisk trigger called `reviewTrigger` on the Cloudant database `socialreviewdb`.  This uses the Whisk built-in trigger from the generated Cloudant package.
 
    ```
-   # wsk trigger create reviewTrigger --feed /<org>_<space>/Bluemix_refarch-cloudantdb_refarch-cloudantdb-credential/changes --param dbname socialreviewdb-staging
+   # wsk trigger create reviewTrigger --feed /<org>_<space>/Bluemix_refarch-cloudantdb_refarch-cloudantdb-credential/changes --param dbname socialreviewdb
    ```
    
-6. Create a rule that fires the `analyzeTone` action when `reviewTrigger` is triggered.  This analyzes the text of posted reviews and uses the output to decide whether to flag the review (i.e. save them in `socialreviewdb-flagged`) or whether to post the review as is (i.e. save them in `socialreviewdb`):
+6. Create a rule that fires the `analyzeTone` action when `reviewTrigger` is triggered.  This analyzes the text of posted reviews and uses the output to decide whether to unflag the review so it is returned by the API:
 
    ```
    # wsk rule create handleReviewPosted reviewTrigger socialreview/analyzeTone
@@ -131,10 +131,11 @@ You can use the following button to deploy the Social Review microservice to Blu
    ```
    
    Observe in the OpenWhisk monitor: 
-   - the `saveReview` action is called, which saves the review to the `socialreviewdb-staging` database.  
+   - the `saveReview` action is called, which saves the review to the `socialreviewdb` database, initially flagging it.
    - the `reviewTrigger` is fired, 
    - which triggers the `handleReviewPosted` rule, 
-   - which executes the `analyzeTone` action.  the review text, "I love this product!", is analyzed and determined to be positive, and the comment is inserted into the `socialreviewdb` database.
+   - which executes the `analyzeTone` action.  the review text, "I love this product!", is analyzed and determined to be positive, and the comment is unflagged and updated into the `socialreviewdb` database with the JSON document returned by the Watson Tone Analyzer attached.
+   - You will notice that since the record was updated, that the trigger is fired again, but since the record was already analyzed (the `analysis` property is non-null), no further processing is performed.
    
 4. Call the GET API to get the reviews for the item:
    ```
@@ -164,4 +165,4 @@ You can use the following button to deploy the Social Review microservice to Blu
    }
    ```
 
-6. Observe in the OpenWhisk monitor that the same sequence is fired, but the review comment text is determined to be `angry` and the review is inserted into the `socialreviewdb-flagged` dataabase.  In the Cloudant management portal, the `socialreviewdb-flagged` table contains the negative review with the Watson Tone Analyzer analysis JSON document attached.
+6. Observe in the OpenWhisk monitor that the same sequence is fired, but the review comment text is determined to be `angry` and the review remains flagged in the dataabase.  In the Cloudant management portal, you can observe that the `socialreviewdb` table contains the all analyzed reviews with the Watson Tone Analyzer analysis JSON document attached.
