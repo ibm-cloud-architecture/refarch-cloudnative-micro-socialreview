@@ -12,7 +12,11 @@ This project is built to demonstrate how to build a Microservices application im
  - Use [OpenWhisk triggers](https://github.com/openwhisk/openwhisk/blob/master/docs/triggers_rules.md) to fire an OpenWhisk action on Cloudant database change
  - Use [Watson Tone Analyzer REST API](https://www.ibm.com/watson/developercloud/tone-analyzer/api/v3/) to analyze text.
  
-## Provision Cloudant Database in Bluemix
+![Social Review component Diagram](socialreview-openwhisk.png)
+
+## Pre-requisites
+ 
+### Provision Cloudant Database in Bluemix
 
 1. Login to your Bluemix console  
 2. Open browser to create Cloudant Service using this link [https://console.ng.bluemix.net/catalog/services/cloudant-nosql-db](https://console.ng.bluemix.net/catalog/services/cloudant-nosql-db)  
@@ -20,7 +24,7 @@ This project is built to demonstrate how to build a Microservices application im
 4. For testing, you can select the "Shared" plan, then click "Create"  
 5. Once the service has been created, note the service credentials under "Service Credentials".  In particular, the Social Review microservice requires the `url` property.
 
-## Provision Watson Tone Analyzer in Bluemix
+### Provision Watson Tone Analyzer in Bluemix
 
 1. Login to your Bluemix console
 2. Open browser to create the Watson Tone Analyzer service using this link [https://console.ng.bluemix.net/catalog/services/tone-analyzer/](https://console.ng.bluemix.net/catalog/services/tone-analyzer/)
