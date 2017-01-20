@@ -24,7 +24,7 @@ function getCloudantCredential(param) {
     }
 
     if (!param.cloudant_reviews_db) {
-        whisk.error('cloudant staging db is required.');
+        whisk.error('cloudant db is required.');
         return;
     }
 
@@ -48,7 +48,9 @@ function getCloudantChange(params) {
 
             if (!error) {
                 console.log('success', response);
-                params['review'] = response;
+                if (response.analysis == null) {
+                    params['review'] = response;
+                }
                 resolve(params);
             } else {
                 console.error('error', error);
@@ -59,6 +61,10 @@ function getCloudantChange(params) {
 }
 
 function analyzeText(params) {
+    if (params.review == null) {
+        return Promise.resolve(params);
+    }
+
     var watsonURL = params.watson_url + "/v3/tone?version=2016-05-19";
     var watsonAuth = new Buffer(params.watson_username + ":" + params.watson_password).toString('base64');
     console.log('text to analyze: ', params.review.comment);
@@ -93,13 +99,13 @@ function analyzeText(params) {
                 }
             }
 
-            params['db_to_insert'] = params.cloudant_reviews_db;
             console.log("The max emotion was: ", max_emotion, ", score: ", max_doc_tone);
 
             if (max_emotion != "joy") {
                 console.log("Flagging comment!");
-                params['db_to_insert'] = params.cloudant_reviews_db + "-flagged";
-            } 
+            }  else {
+                params['review']['flagged'] = false;
+            }
 
             params['review']['analysis'] = doc_analysis;
 
@@ -114,11 +120,13 @@ function analyzeText(params) {
 }
 
 function insertRecord(params) {
-    var cloudant = params.cloudant;
-    var dbName = params.db_to_insert;
-    var review = params.review;
+    if (params.review == null) {
+        return Promise.resolve(params);
+    }
 
-    delete review._rev;
+    var cloudant = params.cloudant;
+    var dbName = params.cloudant_reviews_db;
+    var review = params.review;
 
     return new Promise(function(resolve, reject) {
         console.log("inserting review: ", review);
@@ -142,6 +150,7 @@ function main(params) {
         return whisk.error('getCloudantAccount returned an unexpected object type.');
     }
 
+    console.log(params);
     var cloudant = cloudantOrError;
     params['cloudant'] = cloudant;
 

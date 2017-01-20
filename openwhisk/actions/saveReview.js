@@ -39,7 +39,7 @@ function getCloudantCredential(param) {
 function insertRecord(params) {
     var cloudant = params.cloudant;
     var review = params.review;
-    var dbName = params.cloudant_reviews_db + "-staging";
+    var dbName = params.cloudant_reviews_db;
 
     return new Promise(function(resolve, reject) {
         console.log("inserting review into ", dbName, ": ", review);
@@ -79,8 +79,6 @@ function main(params) {
 
     console.log("saveReview triggered, review: ", review);
 
-    // TODO: create table, index, design doc
-
     var cloudantOrError = getCloudantCredential(params);
     if (typeof cloudantOrError !== 'object') {
         return whisk.error('getCloudantAccount returned an unexpected object type.');
@@ -88,9 +86,11 @@ function main(params) {
 
     var cloudant = cloudantOrError;
 
-    // write each message to cloudant staging DB
+    // write each message to cloudant DB
     params['cloudant'] = cloudant;
     params['review'] = review;
+    params['review']['flagged'] = true;
+
     return Promise.resolve(params)
       .then(insertRecord)
       .then(function (body) {

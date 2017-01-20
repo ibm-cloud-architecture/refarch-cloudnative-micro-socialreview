@@ -100,9 +100,9 @@ stages:
 
       # get the cloudant package
       cloudant_package=`./wsk package list | grep "${cloudant_svc_key_name}" | awk '{print $1;}'`
-      echo "Creating trigger reviewTrigger for feed ${cloudant_package}/changes on db socialreviewdb-staging ..."
+      echo "Creating trigger reviewTrigger for feed ${cloudant_package}/changes on db socialreviewdb ..."
       ./wsk trigger get -s reviewTrigger || \
-          ./wsk trigger create reviewTrigger --feed ${cloudant_package}/changes --param dbname socialreviewdb-staging
+          ./wsk trigger create reviewTrigger --feed ${cloudant_package}/changes --param dbname socialreviewdb
 
       echo "Creating rule handleReviewPosted on reviewTrigger ..."
       ./wsk rule get -s handleReviewPosted || \

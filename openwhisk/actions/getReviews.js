@@ -1,6 +1,3 @@
-
-var Promise = require('promise');
-
 function getCloudantCredential(param) {
     var cloudantUrl;
 
@@ -38,6 +35,7 @@ function getCloudantCredential(param) {
 }
 
 function getRecord(cloudantdb, id) {
+    /*
     cloudantdb.index(function(err, result) {
         if (err) {
             console.log(err);
@@ -46,23 +44,25 @@ function getRecord(cloudantdb, id) {
         }
         console.log('Indexes:', result);
     });
+    */
 
     return new Promise(function(resolve, reject) {
         console.log('find documents with id: ', id);
 
-        // show me the indexes
-
-        cloudantdb.find({selector: { itemId: id }}, 
+        // query the view, passing the id
+        cloudantdb.view('unflaggedByItemId', 'itemIdIndex', { keys: [ id ] }, 
             function(err, result) {
+                console.log(result);
                 if (err) {
-                    if (err.statusCode != 404) {
-                        // if error code is not found, it's not really an error
-                        // as the record doesn't exist yet.  otherwise, fail the operation
-                        reject(err);
-                    }
+                    reject(err);
                 }
 
-                resolve(result);
+                var docs = [];
+                for (i = 0; i < result.rows.length; i++) {
+                    docs.push(result.rows[i].value);
+                }
+
+                resolve({docs: docs});
             });
     });
 }
@@ -84,8 +84,6 @@ function getRecord(cloudantdb, id) {
 function main(params) {
     console.log(params);
     var id = parseInt(params.itemId);
-
-    // TODO: create table, index, design doc
 
     var cloudantOrError = getCloudantCredential(params);
     if (typeof cloudantOrError !== 'object') {

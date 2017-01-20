@@ -34,45 +34,9 @@ function getCloudantCredential(param) {
     return cloudant;
 }
 
-function getStagingDatabase(params) {
-    params['dbname'] = params.cloudant_reviews_db + '-staging';
-
-    return _getDatabase(params);
-}
-
-function createStagingDatabase(params) {
-    params['dbname'] = params.cloudant_reviews_db + '-staging';
-
-    return _createDatabase(params);
-}
-
-function getFlaggedDatabase(params) {
-    params['dbname'] = params.cloudant_reviews_db + '-flagged';
-
-    return _getDatabase(params);
-}
-
-function createFlaggedDatabase(params) {
-    params['dbname'] = params.cloudant_reviews_db + '-flagged';
-
-    return _createDatabase(params);
-}
-
 function getDatabase(params) {
-    params['dbname'] = params.cloudant_reviews_db;
-
-    return _getDatabase(params);
-}
-
-function createDatabase(params) {
-    params['dbname'] = params.cloudant_reviews_db;
-
-    return _createDatabase(params);
-}
-
-function _getDatabase(params) {
     var cloudant = params.cloudant;
-    var dbName = params.dbname;
+    var dbName = params.cloudant_reviews_db;
 
     console.log('getDatabase: ', dbName);
 
@@ -99,10 +63,10 @@ function _getDatabase(params) {
     });
 }
 
-function _createDatabase(params) {
+function createDatabase(params) {
     var cloudant = params.cloudant;
     var review = params.review;
-    var dbName = params.dbname;
+    var dbName = params.cloudant_reviews_db;
 
     return new Promise(function(resolve, reject) {
         if (params.createDatabase == false) {
@@ -136,20 +100,16 @@ function getIndex(params) {
     return new Promise(function (resolve, reject) {
         var cloudantdb = cloudant.db.use(dbName);
 
-        cloudantdb.index(function (er, result) {
-            params['indexExists'] = false;
+        cloudantdb.get('_design/unflaggedByItemId', function (er, result) {
+            params['ddocExists'] = true;
             if (er) {
-                reject(er);
-            }
-
-            console.log('The database has %d indexes', result.indexes.length);
-            for (var i = 0; i < result.indexes.length; i++) {
-                if (result.indexes[i].name == 'itemIdIndex') {
-                    params['indexExists'] = true;
+                if (er.statusCode != 404) {
+                    reject(er);
                 }
-                console.log('  %s (%s): %j', result.indexes[i].name, result.indexes[i].type, result.indexes[i].def);
-            }           
 
+                // already exists
+                params['ddocExists'] = false;
+            }
 
             resolve(params);
         });
@@ -163,39 +123,29 @@ function createIndex(params) {
     var dbName = params.cloudant_reviews_db;
 
     return new Promise(function (resolve, reject) {
-        if (params['indexExists'] == true) {
-            console.log("index already exists");
+        if (params['ddocExists'] == true) {
+            console.log("design doc already exists");
             resolve(params);
             return;
         }
 
-        var item_indexer = function(doc) {
-            if (doc.itemId) {
-                index('itemId', doc.itemId);
-            }
-        };
-
         var ddoc = {
-            _id: '_design/itemIdIndex',
+            _id: '_design/unflaggedByItemId',
             language: "query",
             views: {
                 itemIdIndex: {
-                    map: {
-                        fields: {
-                            itemId: "asc"
+                    map: function (doc) {
+                        if (doc.flagged !== null && doc.flagged !== true) {
+                            // if document is not flagged, then return mapping
+                            // by itemId
+                            emit(doc.itemId, doc);
                         }
-                    },
-                    reduce: "_count",
-                    options: {
-                        def: {
-                            fields: [
-                                "itemId"
-                            ]
-                        }
-                    }
+                    }, 
                 }
-            }        
+            },
+            language: "javascript"
         };
+
 
         var cloudantdb = cloudant.db.use(dbName);
 
@@ -203,7 +153,7 @@ function createIndex(params) {
             if (er) {
                 reject(er);
             }
-            console.log("Created itemId index");
+            console.log("Created design doc");
 
             resolve(params);
 
@@ -225,10 +175,6 @@ function main(params) {
     params['cloudant'] = cloudant;
 
     return Promise.resolve(params)
-        .then(getStagingDatabase)
-        .then(createStagingDatabase)
-        .then(getFlaggedDatabase)
-        .then(createFlaggedDatabase)
         .then(getDatabase)
         .then(createDatabase)
         .then(getIndex)
