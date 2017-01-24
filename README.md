@@ -12,7 +12,7 @@ This project is built to demonstrate how to build a Microservices application im
  - Use [OpenWhisk triggers](https://github.com/openwhisk/openwhisk/blob/master/docs/triggers_rules.md) to fire an OpenWhisk action on Cloudant database change
  - Use [Watson Tone Analyzer REST API](https://www.ibm.com/watson/developercloud/tone-analyzer/api/v3/) to analyze text.
  
-![Social Review component Diagram](socialreview-openwhisk-apiconnect.png)
+![Social Review component Diagram](socialreview-openwhisk.png)
 
 ## Pre-requisites
  
