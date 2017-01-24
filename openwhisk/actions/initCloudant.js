@@ -34,9 +34,9 @@ function getCloudantCredential(param) {
     return cloudant;
 }
 
-function getDatabase(params) {
+function _getDatabase(params) {
     var cloudant = params.cloudant;
-    var dbName = params.cloudant_reviews_db;
+    var dbName = params.dbname;
 
     console.log('getDatabase: ', dbName);
 
@@ -63,10 +63,10 @@ function getDatabase(params) {
     });
 }
 
-function createDatabase(params) {
+function _createDatabase(params) {
     var cloudant = params.cloudant;
     var review = params.review;
-    var dbName = params.cloudant_reviews_db;
+    var dbName = params.dbname;
 
     return new Promise(function(resolve, reject) {
         if (params.createDatabase == false) {
@@ -91,6 +91,30 @@ function createDatabase(params) {
         });
     });
 
+}
+
+function getStagingDatabase(params) {
+    params.dbname = params.cloudant_reviews_db + "-staging";
+
+    return _getDatabase(params);
+}
+
+function getReviewsDatabase(params) {
+    params.dbname = params.cloudant_reviews_db;
+
+    return _getDatabase(params);
+}
+
+function createStagingDatabase(params) {
+    params.dbname = params.cloudant_reviews_db + "-staging";
+
+    return _createDatabase(params);
+}
+
+function createReviewsDatabase(params) {
+    params.dbname = params.cloudant_reviews_db;
+
+    return _createDatabase(params);
 }
 
 function getIndex(params) {
@@ -175,8 +199,10 @@ function main(params) {
     params['cloudant'] = cloudant;
 
     return Promise.resolve(params)
-        .then(getDatabase)
-        .then(createDatabase)
+        .then(getStagingDatabase)
+        .then(createStagingDatabase)
+        .then(getReviewsDatabase)
+        .then(createReviewsDatabase)
         .then(getIndex)
         .then(createIndex)
         .then(function(data) {

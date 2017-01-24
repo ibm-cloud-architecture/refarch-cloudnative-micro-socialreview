@@ -128,6 +128,9 @@ function insertRecord(params) {
     var dbName = params.cloudant_reviews_db;
     var review = params.review;
 
+    // remove the _rev property since it's being inserted into a new database
+    delete review._rev;
+
     return new Promise(function(resolve, reject) {
         console.log("inserting review: ", review);
         var cloudantdb = cloudant.db.use(dbName);

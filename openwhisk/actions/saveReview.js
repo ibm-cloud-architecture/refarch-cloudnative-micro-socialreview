@@ -39,7 +39,7 @@ function getCloudantCredential(param) {
 function insertRecord(params) {
     var cloudant = params.cloudant;
     var review = params.review;
-    var dbName = params.cloudant_reviews_db;
+    var dbName = params.cloudant_reviews_db + "-staging";
 
     return new Promise(function(resolve, reject) {
         console.log("inserting review into ", dbName, ": ", review);
@@ -89,7 +89,6 @@ function main(params) {
     // write each message to cloudant DB
     params['cloudant'] = cloudant;
     params['review'] = review;
-    params['review']['flagged'] = true;
 
     return Promise.resolve(params)
       .then(insertRecord)
