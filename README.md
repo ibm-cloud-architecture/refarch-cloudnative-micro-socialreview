@@ -1,4 +1,4 @@
-# Social Review Microservice implemented with OpenWhisk actions
+# Social Review Microservice implemented with OpenWhisk Serverless Architecture
 
 *This project is part of the 'IBM Cloud Native Reference Architecture' suite, available at
 https://github.com/ibm-cloud-architecture/refarch-cloudnative*
@@ -21,7 +21,7 @@ This project is built to demonstrate how to build a Microservices application im
 1. Login to your Bluemix console  
 2. Open browser to create Cloudant Service using this link [https://console.ng.bluemix.net/catalog/services/cloudant-nosql-db](https://console.ng.bluemix.net/catalog/services/cloudant-nosql-db)  
 3. Name your Cloudant service name like `refarch-cloudantdb`  
-4. For testing, you can select the "Shared" plan, then click "Create"  
+4. For testing, you can select the "Lite" plan, then click "Create"  
 5. Once the service has been created, note the service credentials under `Service Credentials`.  In particular, the Social Review microservice requires the `url` property.
 
 ### Provision Watson Tone Analyzer in Bluemix
@@ -40,8 +40,16 @@ You can use the following button to deploy the Social Review microservice to Blu
 
 ## Download and configure the OpenWhisk CLI
 
-1. Download the OpenWhisk CLI for your platform from this link [https://console.ng.bluemix.net/openwhisk/cli](https://console.ng.bluemix.net/openwhisk/cli)
-2. In the above link, copy the command to configure the OpenWhisk CLI and paste it into a terminal window.  Ensure that you have selected the Bluemix org and space corresponding to where the Cloudant service was created.
+1. Log in to Bluemix portal.  Ensure that you have selected the Bluemix org and space corresponding to where the Cloudant service was created.  Download the OpenWhisk CLI for your platform from this link [https://console.ng.bluemix.net/openwhisk/cli](https://console.ng.bluemix.net/openwhisk/cli)
+
+   Once the CLI is downloaded, add the `wsk` binary to your path.
+   
+2. From the above link, copy the command to configure the OpenWhisk CLI and paste it into a terminal window.  e.g.
+
+   ```
+   wsk property set --apihost openwhisk.ng.bluemix.net --auth xxxx:yyyy
+   ```
+   
 3. Run the following to automatically create OpenWhisk packages with the Cloudant credentials in your space:
 
    ```
@@ -91,7 +99,7 @@ You can use the following button to deploy the Social Review microservice to Blu
 5. Create an OpenWhisk trigger called `reviewTrigger` on the Cloudant database `socialreviewdb-staging`.  This uses the Whisk built-in trigger from the generated Cloudant package.  Reviews are initially added to this staging database.
 
    ```
-   # wsk trigger create reviewTrigger --feed /<org>_<space>/Bluemix_refarch-cloudantdb_refarch-cloudantdb-credential/changes --param dbname socialreviewdb
+   # wsk trigger create reviewTrigger --feed /<org>_<space>/Bluemix_<Cloudant service name>_<Cloudant service credential>/changes --param dbname socialreviewdb-staging
    ```
    
 6. Create a rule that fires the `analyzeTone` action when `reviewTrigger` is triggered.  This analyzes the text of posted reviews and uses the output to decide whether to unflag the review so it is returned by the API.  Once the text is analyzed, it will be inserted into the `socialreviewdb` database.
@@ -120,7 +128,7 @@ You can use the following button to deploy the Social Review microservice to Blu
    
 3. Create a positive review using the API:
    ```
-   # curl -X POST -H "Content-Type: application/json" -d '{ "comment": "I love this product!", "rating": 5, "reviewer_name": "Jeffrey Kwong", "review_date": "01/19/2016", "reviewer_email": "jkwong@ca.ibm.com"}' https://d7af58f0-6cdc-4a52-b436-f98991dc09c9-gws.api-gw.mybluemix.net/api/reviews/comment?itemId=13402
+   # curl -X POST -H "Content-Type: application/json" -d '{ "comment": "I love this product!", "rating": 5, "reviewer_name": "Jeffrey Kwong", "review_date": "01/19/2016", "reviewer_email": "jkwong@ca.ibm.com"}' https://<OpenWhisk API endpoint>/api/reviews/comment?itemId=13402
    {
      "result": "OK",
      "message": {
@@ -138,7 +146,7 @@ You can use the following button to deploy the Social Review microservice to Blu
    
 4. Call the GET API to get the reviews for the item:
    ```
-   # curl -X GET -H "Accept: application/json" https://d7af58f0-6cdc-4a52-b436-f98991dc09c9-gws.api-gw.mybluemix.net/api/reviews/list?itemId=13402
+   # curl -X GET -H "Accept: application/json" https://<OpenWhisk API endpoint>/api/reviews/list?itemId=13402
    {
      "docs": [{
        "reviewer_email": "jkwong@ca.ibm.com",
@@ -153,7 +161,7 @@ You can use the following button to deploy the Social Review microservice to Blu
     
 5. Now submit a negative review:
    ```
-   # curl -X POST -H "Content-Type: application/json" -d '{ "comment": "I hate this product!", "rating": 1, "reviewer_name": "Jeffrey Kwong", "review_date": "01/19/2016", "reviewer_email": "jkwong@ca.ibm.com"}' https://d7af58f0-6cdc-4a52-b436-f98991dc09c9-gws.api-gw.mybluemix.net/api/reviews/comment?itemId=13402
+   # curl -X POST -H "Content-Type: application/json" -d '{ "comment": "I hate this product!", "rating": 1, "reviewer_name": "Jeffrey Kwong", "review_date": "01/19/2016", "reviewer_email": "jkwong@ca.ibm.com"}' https://<OpenWhick API endpoint>/api/reviews/comment?itemId=13402
    {
      "result": "OK",
      "message": {
