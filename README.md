@@ -92,8 +92,8 @@ You can use the following button to deploy the Social Review microservice to Blu
 4. Create the OpenWhisk REST API gateway for the OpenWhisk actions. This exposes two of the OpenWhisk actions as REST API.
    
    ```
-   # wsk api-experimental create /api /reviews/list get socialReview/getReviews
-   # wsk api-experimental create /api /reviews/comment post socialReview/saveReview
+   # wsk api-experimental create /api /reviews/list get socialreview/getReviews
+   # wsk api-experimental create /api /reviews/comment post socialreview/saveReview
    ```
 
 5. Create an OpenWhisk trigger called `reviewTrigger` on the Cloudant database `socialreviewdb-staging`.  This uses the Whisk built-in trigger from the generated Cloudant package.  Reviews are initially added to this staging database.
