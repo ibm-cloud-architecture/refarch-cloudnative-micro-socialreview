@@ -1,6 +1,0 @@
-applications:
-- name: socialreview-microservice-app
-  memory: 512M
-  path: micro-soialreview-0.1.0.jar
-  host: socialreview-microservice-app
-  buildpack: https://github.com/cloudfoundry/java-buildpack.git#v3.7
