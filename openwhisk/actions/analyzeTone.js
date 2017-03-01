@@ -39,7 +39,7 @@ function getCloudantCredential(param) {
 function getCloudantChange(params) {
     var dbName = params.dbname;
     var cloudant = params.cloudant;
-    var id = params.id
+    var id = params.id;
 
     return new Promise(function(resolve, reject) {
         var cloudantdb = cloudant.db.use(dbName);
@@ -48,8 +48,8 @@ function getCloudantChange(params) {
 
             if (!error) {
                 console.log('success', response);
-                if (response.analysis == null) {
-                    params['review'] = response;
+                if (response.analysis === null) {
+                    params.review = response;
                 }
                 resolve(params);
             } else {
@@ -61,7 +61,7 @@ function getCloudantChange(params) {
 }
 
 function analyzeText(params) {
-    if (params.review == null) {
+    if (params.review === null) {
         return Promise.resolve(params);
     }
 
@@ -78,7 +78,7 @@ function analyzeText(params) {
         },
         body: params.review.comment,
         json: false
-    }
+    };
 
     return request(requestOptions).
         then(function(parsedBody) {
@@ -104,10 +104,10 @@ function analyzeText(params) {
             if (max_emotion != "joy") {
                 console.log("Flagging comment!");
             }  else {
-                params['review']['flagged'] = false;
+                params.review.flagged = false;
             }
 
-            params['review']['analysis'] = doc_analysis;
+            params.review.analysis = doc_analysis;
 
             return Promise.resolve(params);
 
@@ -120,7 +120,7 @@ function analyzeText(params) {
 }
 
 function insertRecord(params) {
-    if (params.review == null) {
+    if (params.review === null) {
         return Promise.resolve(params);
     }
 
@@ -155,7 +155,7 @@ function main(params) {
 
     console.log(params);
     var cloudant = cloudantOrError;
-    params['cloudant'] = cloudant;
+    params.cloudant = cloudant;
 
     return Promise.resolve(params)
         .then(getCloudantChange)

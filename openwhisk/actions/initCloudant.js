@@ -45,13 +45,13 @@ function _getDatabase(params) {
         cloudant.db.get(dbName, function(error, response) {
             if (!error) {
                 console.log('success: database found', response);
-                params['createDatabase'] = false;
+                params.createDatabase = false;
                 resolve(params);
             } else {
                 // 404 means database doesn't exist
                 if (error.statusCode == 404) {
                     console.log('database ', dbName, ' was not found, will attempt to create ...');
-                    params['createDatabase'] = true;
+                    params.createDatabase = true;
                     resolve(params);
                     return;
                 }
@@ -69,7 +69,7 @@ function _createDatabase(params) {
     var dbName = params.dbname;
 
     return new Promise(function(resolve, reject) {
-        if (params.createDatabase == false) {
+        if (params.createDatabase === false) {
             console.log('Database ', dbName, ' already exists');
             delete params.createDatabase;
             resolve(params);
@@ -125,14 +125,14 @@ function getIndex(params) {
         var cloudantdb = cloudant.db.use(dbName);
 
         cloudantdb.get('_design/unflaggedByItemId', function (er, result) {
-            params['ddocExists'] = true;
+            params.ddocExists = true;
             if (er) {
                 if (er.statusCode != 404) {
                     reject(er);
                 }
 
                 // already exists
-                params['ddocExists'] = false;
+                params.ddocExists = false;
             }
 
             resolve(params);
@@ -147,7 +147,7 @@ function createIndex(params) {
     var dbName = params.cloudant_reviews_db;
 
     return new Promise(function (resolve, reject) {
-        if (params['ddocExists'] == true) {
+        if (params.ddocExists === true) {
             console.log("design doc already exists");
             resolve(params);
             return;
@@ -155,7 +155,6 @@ function createIndex(params) {
 
         var ddoc = {
             _id: '_design/unflaggedByItemId',
-            language: "query",
             views: {
                 itemIdIndex: {
                     map: function (doc) {
@@ -196,7 +195,7 @@ function main(params) {
     }
 
     var cloudant = cloudantOrError;
-    params['cloudant'] = cloudant;
+    params.cloudant = cloudant;
 
     return Promise.resolve(params)
         .then(getStagingDatabase)
@@ -214,6 +213,6 @@ function main(params) {
             return {
                 result: "error",
                 error: error
-            }
+            };
         });
 }

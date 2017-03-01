@@ -87,8 +87,8 @@ function main(params) {
     var cloudant = cloudantOrError;
 
     // write each message to cloudant DB
-    params['cloudant'] = cloudant;
-    params['review'] = review;
+    params.cloudant = cloudant;
+    params.review = review;
 
     return Promise.resolve(params)
       .then(insertRecord)
