@@ -163,7 +163,9 @@ function main(params) {
         });
 }
 
+/*
 var fs = require('fs');
 var paramFile = fs.readFileSync('socialReviewParams.json');
 var watsonParam = JSON.parse(paramFile);
 main(watsonParam);
+*/
