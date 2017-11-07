@@ -15,7 +15,7 @@ apply plugin: 'spring-boot'
 apply plugin: 'io.spring.dependency-management'
 
 jar {
-    baseName = 'micro-soialreview'
+    baseName = 'micro-socialreview'
     version =  '0.1.0'
 }
 
@@ -33,15 +33,11 @@ dependencyManagement {
 }
 
 dependencies {
-    // tag::jetty[]
     compile("org.springframework.boot:spring-boot-starter-web:1.4.0.RELEASE") {
         exclude module: "spring-boot-starter-tomcat"
     }
 
     compile("org.springframework.boot:spring-boot-starter-jetty:1.4.0.RELEASE")
-
-    // end::jetty[]
-    // tag::actuator[]
     compile("org.springframework.boot:spring-boot-starter-actuator:1.4.0.RELEASE")
     compile('org.springframework.cloud:spring-cloud-starter-eureka')
     compile group: 'com.cloudant', name: 'cloudant-client', version: '2.5.1'
@@ -53,4 +49,19 @@ dependencies {
 
 task wrapper(type: Wrapper) {
     gradleVersion = '2.3'
+}
+
+test {
+    useJUnit()
+    exclude '**/DeployTest.class'
+    testLogging {
+        events 'started', 'passed'
+        showStandardStreams = true
+    }
+}
+
+task integrationTest(type: Test) {
+    useJUnit {
+        include '**/*IntegrationTests.class'
+    }
 }

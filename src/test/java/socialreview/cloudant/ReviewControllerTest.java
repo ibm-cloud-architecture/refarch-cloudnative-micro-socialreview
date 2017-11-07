@@ -60,8 +60,6 @@ public class ReviewControllerTest {
 		this.base = new URL("http://localhost:" + port + "/micro/review");
         template = new TestRestTemplate();
 
-		 System.out.println(db.info().toString());
-
 	}
 
 	@Test
