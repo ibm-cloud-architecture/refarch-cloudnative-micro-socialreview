@@ -3,7 +3,6 @@ package socialreview.cloudant;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -17,9 +16,6 @@ import com.cloudant.client.api.model.IndexField;
 import com.cloudant.client.api.model.IndexField.SortOrder;
 import com.cloudant.client.api.model.Response;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
 @RestController
 @RequestMapping("/review")
@@ -72,7 +68,6 @@ public class ReviewRestController {
               }
 		      );
           System.out.println("Successfully created index");
-          //allDocs = db.findByIndex("{\"itemId\" :\"" + itemId + "\"}", Review.class);
           allDocs = db.findByIndex("{\"itemId\" : " + itemId + "}", Review.class);
       }
 
